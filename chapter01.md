@@ -1,34 +1,12 @@
-# 第1章
+# 第1章　スクレイピングの注意点
 
-{% api-method method="get" host="" path="" %}
-{% api-method-summary %}
+## スクレイピングに関する注意点
 
-{% endapi-method-summary %}
+はじめに、スクレイピングを行う際の注意事項をまとめておきます。また、著者は法律家や弁護士でもありませんので、これを頼りには行動しないでください。加え、本書の内容を法律家の助言と受け取らないようにご注意いただけますと幸いです。必要な場合は弁護士に相談してください。
 
-{% api-method-description %}
+ここでは、スクレイピングの際に注意すべき点についてまとめておきます。注意すべき点としては、「著作権」「動産不法侵入」「robots.txt」「利用規約」「リクエスト」などが考えられます。これらを1つづ内容を深耕してまとめていきます。
 
-{% endapi-method-description %}
+### 著作権
 
-{% api-method-spec %}
-{% api-method-request %}
-{% api-method-path-parameters %}
-{% api-method-parameter name="" type="string" required=false %}
 
-{% endapi-method-parameter %}
-{% endapi-method-path-parameters %}
-{% endapi-method-request %}
-
-{% api-method-response %}
-{% api-method-response-example httpCode=200 %}
-{% api-method-response-example-description %}
-
-{% endapi-method-response-example-description %}
-
-```
-
-```
-{% endapi-method-response-example %}
-{% endapi-method-response %}
-{% endapi-method-spec %}
-{% endapi-method %}
 
