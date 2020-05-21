@@ -1,4 +1,4 @@
-# 第2章　ふが
+# 第2章　Scrapyとは
 
 ## Can I become who I want to be?
 
