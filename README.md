@@ -1,3 +1,7 @@
+---
+description: 'GitBook Version : https://sugiaki1989.gitbook.io/scrapy-note/'
+---
+
 # Scrapy Note
 
 ## Getting Super Powers
