@@ -4,26 +4,33 @@ description: 'GitBook Version : https://sugiaki1989.gitbook.io/scrapy-note/'
 
 # Scrapy Note
 
-## Getting Super Powers
+## はじめに
 
-Becoming a super hero is a fairly straight forward process:
+この本は、Pythonで書かれたWebクロールフレームワークであるScrapyを中心に、Webスクレイピングの基礎的な部分からScrapyの使い方まで、個人的に学習した内容をまとめているものです。
 
+また、Pythonについては、Scrapyの学習に合わせて使い始めました。そのため、コードの記述において、杜撰な箇所が散見されると思います。
+
+### 参考書籍
+
+下記の書籍を参考に、Scrapyの利用方法をまとめています。
+
+### 免責事項
+
+Webスクレイピングは時と場合によっては法律の問題に発展する恐れがありますので、ここにまとめられているサンプルコードを実行したことによって、万一いかなる損害が発生したとしても、いかなる責任も負いません。すべて自己責任でお使いいただけますと幸いです。
+
+### 実行環境
+
+Pythonのバージョンは下記のとおりです。
+
+```text
+$ python3 -V
+Python 3.8.2
 ```
-$ give me super-powers
+
+Scrapyのバージョンは下記のとおりです。
+
+```text
+$ scrapy -V
+Scrapy 2.0.1 
 ```
-
-{% hint style="info" %}
- Super-powers are granted randomly so please submit an issue if you're not happy with yours.
-{% endhint %}
-
-Once you're strong enough, save the world:
-
-{% code title="hello.sh" %}
-```bash
-# Ain't no code for that yet, sorry
-echo 'You got to trust me on this, I saved the world'
-```
-{% endcode %}
-
-
 

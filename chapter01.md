@@ -1,4 +1,4 @@
-# 第1章　ほげ
+# 第1章
 
 {% api-method method="get" host="" path="" %}
 {% api-method-summary %}
