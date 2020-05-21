@@ -2,7 +2,7 @@
 description: 'GitBook Version : https://sugiaki1989.gitbook.io/scrapy-note/'
 ---
 
-# Scrapy Note
+# Scrapy Note・・・製作中
 
 ## はじめに
 
