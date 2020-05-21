@@ -14,11 +14,13 @@ description: 'GitBook Version : https://sugiaki1989.gitbook.io/scrapy-note/'
 
 下記の書籍を参考に、Scrapyの利用方法をまとめています。
 
-[Dimitrios Kouzis-Loukas \(2016\) Learning Scrapy, Packt Publishing](https://www.packtpub.com/big-data-and-business-intelligence/learning-scrapy)
+・[Dimitrios Kouzis-Loukas \(2016\) Learning Scrapy, Packt Publishing](https://www.packtpub.com/big-data-and-business-intelligence/learning-scrapy)
+
+・[Scrapy Tutorial](https://docs.scrapy.org/en/latest/intro/tutorial.html#)
 
 ### 免責事項
 
-Webスクレイピングは時と場合によっては法律の問題に発展する恐れがありますので、ここにまとめられているサンプルコードを実行したことによって、万一いかなる損害が発生したとしても、いかなる責任も負いません。すべて自己責任でお使いいただけますと幸いです。
+Webスクレイピングは時と場合によっては法律の問題に発展する恐れがありますので、ここにまとめられているサンプルコードを実行したことによって、万一いかなる損害が発生したとしても、著者はいかなる責任も負いません。すべて自己責任でお使いいただけますと幸いです。
 
 ### 実行環境
 
