@@ -170,7 +170,5 @@ ITEM_PIPELINES = {
 
 ![Scrapy Data Flow](.gitbook/assets/scrapy_architecture_02.png)
 
-### Scrapyの環境設定
-
 
 

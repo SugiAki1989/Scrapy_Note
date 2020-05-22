@@ -3,5 +3,5 @@
 * [Scrapy Note・・・製作中](README.md)
 * [第1章　スクレイピングの注意点](chapter01_rules.md)
 * [第2章　Scrapyとは](chapter02_scrapy.md)
-* [Untitled](chapter03.md)
+* [第3章　Scrapyの環境設定](chapter03_settings.md)
 
