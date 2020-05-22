@@ -76,7 +76,7 @@ Scrapyは「収集するデータを定義する」→「抽出する場所と�
 
 出力データの形式を定義するために、Scrapyは Itemクラスを提供しています。Itemオブジェクトは、スクレイピングされたデータを収集するためのコンテナなようなもので、定義していない値などは弾かれてしまいます。
 
-下記のように必要なデータを宣言します。
+下記のように必要なアイテムを宣言します。
 
 ```text
 class Product(scrapy.Item):
@@ -126,7 +126,7 @@ class QuotesSpider(scrapy.Spider):
 * start\_urls：クロールを開始するURLのリストです。複数指定できます。
 * LinkExtractor：LinkExtractorを使えば、正規表現でクローラーを動かすディレクトリを指定できます。個人的には、意図していないページが正規表現のパターンに一致してしまい、サーバーに意図していないようなリクエストを大量に生みだすリスクを極力避けたいので、個人的には使っていません。他のページでも紹介していません。
 
-このスクリプトがかければ、scrapyは動かすことができます。ターミナルで下記のように動かすと、大量のログとともにスクレイピングの情報が出力されます。上記のスクリプトであれば、スパイダーの名前はquotesなので、それを指定します。-oでアウトプットする形式が選べます。XML、CSV、JSONなどのさまざまな出力形式でエクスポートできます。
+このスクリプトがかければ、scrapyは動かすことができます。ターミナルで下記のように動かすと、大量のログとともにスクレイピングの情報が出力されます。上記のスクリプトであれば、スパイダーの名前はquotesなので、それを指定します。オプション-oでアウトプットする形式が選べます。XML、CSV、JSON、JSON LINES、XMLなどのさまざまな出力形式でエクスポートできます。
 
 ```text
 $ scrapy crawl quotes -o output.json
@@ -184,7 +184,17 @@ ITEM_PIPELINES = {
 
 ### Scrapyのアーキテクチャ
 
-ああああ
+クローラーを起動すると、どのようなことが内部で行われているのか、ドキュメントの画像をお借りしてまとめておく。
+
+1. Scrapyエンジンは、Spidersからクロールする最初のRequestsを取得。 
+2. Scrapyエンジンは、SchedulerでRequestsをスケジュールリングし、クロールする次のRequestsを求めます。 
+3. Schedulerは、RequestsをScrapyエンジンに返します。 
+4. Scrapyエンジン は、DownloaderにRequestsを送り、Middlewareを通過させます。 
+5. ページのダウンロードが完了すると、 Downloaderは、そのページのレスポンスを生成し、Scrapyエンジンに送信。 Middlewareを通過させます。 
+6. Scrapyエンジンは、 Downloaderからレスポンスを受け取り、それをSpidersに送って処理する。Middlewareを通過させます。 
+7. Spidersはレスポンスを処理し、スクレイピングされたItemと新しいRequestsをScrapyエンジンに返し、Middlewareを通過させます。 
+8. Scrapyエンジンは処理済みのItemを Item・pipelineに送信し、処理済みのRequestsをSchedulerに送信し、可能なら次のクロールを行います。 
+9. Schedulerからの要求がなくなるまで、プロセスは\(ステップ1から\)繰り返されます。
 
 ![Scrapy Data Flow](.gitbook/assets/scrapy_architecture_02.png)
 
