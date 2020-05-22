@@ -51,7 +51,7 @@ Created spider 'sample' using template 'basic' in module:
 
 ### Scrapyの.pyファイル
 
-さきほどのコマンドを実行すると、下記のようなフォルダが生成されます。各.pyファイルの役割をまとめておきます。middlewares.pyは個人的にはまだ使い方をよくわかっていないので、それ以外をまとめます。
+さきほどのコマンドを実行すると、下記のようなフォルダが生成されます。各.pyファイルの役割をまとめておきます。
 
 ```text
 $ tree ~/Desktop/sample_pj/
@@ -91,7 +91,7 @@ scrapy genspiderコマンドで生成したSpidersディレクトリの中のsam
 
 QuotesSpiderは、allowed\_domainsで許可されたドメイン内において、start\_urlsで指定されたURLを起点に、QuotesSpiderは動き始めます。 URLのRequestを生成するstart\_requestsメソッドと、リクエストのコールバック関数としてparseメソッドを呼び出します。コールバック関数は、レスポンスであるWebページをセレクターを使用してページ内容をパースし、データの抽出を行い、辞書形式でアイテムを返します。そして、スパイダーから返されたアイテムは、データベースやcsv、JSONで保存できます。
 
-このように、クローラーのスタート地点を決め、どのような情報を取得し、どのようにクローラーを動かすのかをSpiderに記述します。
+このように、クローラーのスタート地点を決め、どのような情報を取得し、どのようにクローラーを動かすのかをSpiderに記述します。下記はサンプルです。
 
 ```text
 import scrapy
@@ -181,6 +181,17 @@ ITEM_PIPELINES = {
     'myproject.pipelines.PricePipeline': 300
 }
 ```
+
+#### middlewares.py
+
+後述するアーキテクチャの流れをみると、Middlewareというものににデータを通過させることがおおくありますが、このMiddlewareとは何でしょうか。
+
+ScrapyにおけるMiddlewareとは、Scrapyを拡張させるために使用される機能とのこと。デフォルトでも多くの機能が提供されていますが、それでは足りない場合にはMIddlewareを使って拡張することになります。主に2つのMiddlewareがあります。
+
+1. Downloader Middleware：Webページのダウンロード処理を拡張するものです。
+2. Spider Middlware：コールバック関数の処理を拡張するものです。
+
+
 
 ### Scrapyのアーキテクチャ
 
