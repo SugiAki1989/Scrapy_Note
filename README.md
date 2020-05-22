@@ -21,6 +21,15 @@ Webスクレイピングは時と場合によっては法律の問題に発展�
 
 ### 実行環境
 
+macOSの環境で実行しています。バージョンは下記の通りです。
+
+```text
+$ sw_vers
+ProductName:	Mac OS X
+ProductVersion:	10.15.4
+BuildVersion:	19E287
+```
+
 Pythonのバージョンは下記のとおりです。
 
 ```text
