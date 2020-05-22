@@ -51,7 +51,7 @@ Created spider 'sample' using template 'basic' in module:
 
 ### Scrapyの.pyファイル
 
-さきほどのコマンドを実行すると、下記のようなフォルダが生成されます。各.pyファイルの役割をまとめておきます。
+さきほどのコマンドを実行すると、下記のようなフォルダが生成されます。各.pyファイルの役割をまとめておきます。middlewares.pyは個人的にはまだ使い方をよくわかっていないので、それ以外をまとめます。
 
 ```text
 $ tree ~/Desktop/sample_pj/
@@ -83,11 +83,13 @@ class Product(scrapy.Item):
     Z = scrapy.Field()
 ```
 
-#### Spiders
+#### Spiders/spider.py
 
 scrapy genspiderコマンドで生成したSpidersディレクトリの中のsample.pyに、クローラーの動きやスクレイピングのコードなど、スクレイピング方法を定義するクラスです。このような感じで記述します。
 
 QuotesSpiderは、allowed\_domainsで許可されたドメイン内において、start\_urlsで指定されたURLを起点に、QuotesSpiderは動き始めます。 URLのRequestを生成するstart\_requestsメソッドと、リクエストのコールバック関数としてparseメソッドを呼び出します。コールバック関数は、レスポンスであるWebページをセレクターを使用してページ内容をパースし、データの抽出を行い、辞書形式でアイテムを返します。そして、スパイダーから返されたアイテムは、データベースやcsv、JSONで保存できます。
+
+このように、クローラーのスタート地点を決め、どのような情報を取得し、どのようにクローラーを動かすのかをSpiderに記述します。
 
 ```text
 import scrapy
@@ -120,8 +122,45 @@ class QuotesSpider(scrapy.Spider):
 * name：ターミナルでクローラーを起動させる場合に必要なクローラーの名前です。
 * allowed\_domains：クロールできるドメインの文字列を渡します。
 * start\_urls：クロールを開始するURLのリストです。複数指定できます。
+* LinkExtractor：LinkExtractorを使えば、正規表現でクローラーを動かすディレクトリを指定できます。個人的には、意図していないページが正規表現のパターンに一致してしまい、サーバーに意図していないようなリクエストを大量に生みだすリスクを極力避けたいので、個人的には使っていません。他のページでも紹介していません。
 
+このスクリプトがかければ、scrapyは動かすことができます。ターミナルで下記のように動かすと、大量のログとともにスクレイピングの情報が出力されます。上記のスクリプトであれば、スパイダーの名前はquotesなので、それを指定します。-oでアウトプットする形式が選べます。XML、CSV、JSONなどのさまざまな出力形式でエクスポートできます。
 
+```text
+$ scrapy crawl quotes -o output.json
+```
+
+#### pipelines.py
+
+スパイダーによってスクレイピングされた後、アイテムはアイテム・パイプラインに送られて、処理されます。 つまり、アイテムを受け取り、何らかのアクションを実行します。 また、そのアイテムがパイプラインで処理を継続されるか、そのアイテムを取り除くのをコントロールできます。
+
+アイテム・パイプラインを利用することで、データのバリデーションチェックやデータクリーニング、画像であればサイズ変更やその他の画像処理、データベースへの保存などができます。
+
+特定の条件い当てはまるものを削除するアイテム・パイプラインは下記のように記述します。
+
+```text
+from scrapy.exceptions import DropItem
+
+class PricePipeline(object):
+
+    vat_factor = 1.15
+
+    def process_item(self, item, spider):
+        if item.get('price'):
+            if item.get('price_excludes_vat'):
+                item['price'] = item['price'] * self.vat_factor
+            return item
+        else:
+            raise DropItem("Missing price in %s" % item)
+```
+
+そして、アイテム・パイプライン・コンポーネントをアクティブにするために、settings.pyに書きを追加します。300というのは実行の順序を決める整数で0~1000まで自由に設定できますが、これ以外の処理もあるのであれば、それを考慮して順序関係を決定します。
+
+```text
+ITEM_PIPELINES = {
+    'myproject.pipelines.PricePipeline': 300
+}
+```
 
 ### Scrapyのアーキテクチャ
 
