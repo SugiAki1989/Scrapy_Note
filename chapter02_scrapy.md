@@ -186,7 +186,7 @@ ITEM_PIPELINES = {
 
 後述するアーキテクチャの流れをみると、Middlewareというものににデータを通過させることがおおくありますが、このMiddlewareとは何でしょうか。
 
-ScrapyにおけるMiddlewareとは、Scrapyを拡張させるために使用される機能とのこと。デフォルトでも多くの機能が提供されていますが、それでは足りない場合にはMIddlewareを使って拡張することになります。主に2つのMiddlewareがあります。
+ScrapyにおけるMiddlewareとは、Scrapyを拡張させるために使用される機能とのことです。デフォルトでも多くの機能が提供されていますが、それでは足りない場合にはMIddlewareを使って拡張することになります。主に2つのMiddlewareがあります。
 
 1. Downloader Middleware：Webページのダウンロード処理を拡張するものです。
 2. Spider Middlware：コールバック関数の処理を拡張するものです。
@@ -290,7 +290,19 @@ Downloader Middlewareは下記の通りデフォルトで設定されていま�
       style="text-align:left">900</td>
     </tr>
   </tbody>
-</table>### Scrapyのアーキテクチャ
+</table>DownloaderMiddlewareの処理はHTTPリクエストを送る前に順番が小さいものから順番に実行され、それが完了するとダウンロードが始まります。
+
+SpiderMiddlewareは、コールバック関数の処理を拡張できます。下記がデフォルトで設定されているSpiderMiddlewareです。
+
+|  | 内容 | 実行順序 |
+| :--- | :--- | :--- |
+| HttpErrorMiddleware | 失敗したHTTPレスポンスをフィルター処理して、対処しないようにする。 | 50 |
+| OffsiteMiddleware | スパイダーが対象とするドメインから外れているURLのリクエストを除外します。 | 500 |
+| RefererMiddleware | クエストを生成したレスポンスのURLに基づいて、リクエスト Referer ヘッダーを生成します。 | 700 |
+| UrlLengthMiddleware | URLLENGTH\_LIMITより長いURLを持つリクエストを除外します。 | 800 |
+| DepthMiddleware | スクレイピングされるサイト内の各リクエストの深さを追跡するために使用されます。 | 900 |
+
+### Scrapyのアーキテクチャ
 
 クローラーを起動すると、どのようなことが内部で行われているのか、ドキュメントの画像をお借りしてまとめておく。
 
