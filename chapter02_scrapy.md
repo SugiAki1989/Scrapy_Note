@@ -1,12 +1,24 @@
 # 第2章　Scrapyとは
 
-## Can I become who I want to be?
+## はじめに
 
-That's a tough question but thankfully, our team is on it. Please bear with us while we're investigating.
+あああああ
 
-## Have you had a chance to answer the previous question?
+### Scrapyとは
 
-Yes, after a few months we finally found the answer. Sadly, Mike is on vacations right now so I'm afraid we are not able to provide the answer at this point.
+あああああ
 
+### Scrapyのプロジェクト
 
+あああああ
+
+### Scrapyの.pyファイル
+
+あああああ
+
+### Scrapyのアーキテクチャ
+
+ああああ
+
+![Scrapy Data Flow](.gitbook/assets/scrapy_architecture_02.png)
 
