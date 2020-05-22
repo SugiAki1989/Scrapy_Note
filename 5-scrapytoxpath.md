@@ -6,13 +6,15 @@
 
 TODO
 
+### Xpathとは
+
 ### Scrapy Shell
 
 Scrapy Shellを使って、下記のサイトのすべての値を取得する方法をまとめておきます。
 
 * [Books to Scrape](http://books.toscrape.com/)
 
-![Books to Scrape](.gitbook/assets/20200429160520.png)
+![](.gitbook/assets/sukurnshotto-2020-05-22-192149png.png)
 
 ```
 $ scrapy shell 'http://books.toscrape.com/'
@@ -315,7 +317,11 @@ Out[167]: 'next'
 
 ### 書籍の詳細ページ
 
-ここからは[書籍の詳細ページ](http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html)の中身の情報を全部とってみる。
+ここからは[書籍の詳細ページ](http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html)の中身の情報を全部とってみます。
+
+```
+$ scrapy shell 'http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html'
+```
 
 ![Book Detail](.gitbook/assets/20200429163004.png)
 
