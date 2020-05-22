@@ -8,7 +8,9 @@ TODO
 
 ### Xpathとは
 
-### Scrapy Shell
+TODO
+
+### Scrapy Shellとは
 
 Scrapy Shellを使って、下記のサイトのすべての値を取得する方法をまとめておきます。
 
