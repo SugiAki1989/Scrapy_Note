@@ -191,9 +191,106 @@ ScrapyにおけるMiddlewareとは、Scrapyを拡張させるために使用さ�
 1. Downloader Middleware：Webページのダウンロード処理を拡張するものです。
 2. Spider Middlware：コールバック関数の処理を拡張するものです。
 
+Downloader Middlewareは下記の通りデフォルトで設定されています。詳細は[ドキュメント](https://docs.scrapy.org/en/latest/topics/downloader-middleware.html)を参照ください。
 
-
-### Scrapyのアーキテクチャ
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">&#x540D;&#x524D;</th>
+      <th style="text-align:left">&#x5185;&#x5BB9;</th>
+      <th style="text-align:left">&#x5B9F;&#x884C;&#x9806;&#x5E8F;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align:left">RobotsTxtMiddleware</td>
+      <td style="text-align:left">robots.txt&#x306B;&#x5F93;&#x3063;&#x3066;&#x30AF;&#x30ED;&#x30FC;&#x30EA;&#x30F3;&#x30B0;&#x3059;&#x308B;</td>
+      <td
+      style="text-align:left">100</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">HttpAuthMiddleware</td>
+      <td style="text-align:left">&#x5225;&#x540D;BASIC&#x8A8D;&#x8A3C;&#x3092;&#x4F7F;&#x7528;&#x3057;&#x3066;&#x3001;&#x7279;&#x5B9A;&#x306E;&#x30B9;&#x30D1;&#x30A4;&#x30C0;&#x30FC;&#x304B;&#x3089;&#x751F;&#x6210;&#x3055;&#x308C;&#x305F;&#x3059;&#x3079;&#x3066;&#x306E;&#x30EA;&#x30AF;&#x30A8;&#x30B9;&#x30C8;&#x3092;&#x8A8D;&#x8A3C;&#x3057;&#x307E;&#x3059;&#x3002;</td>
+      <td
+      style="text-align:left">300</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">DownloadTimeoutMiddleware</td>
+      <td style="text-align:left">&#x30C0;&#x30A6;&#x30F3;&#x30ED;&#x30FC;&#x30C9;&#x306E;&#x30BF;&#x30A4;&#x30E0;&#x30A2;&#x30A6;&#x30C8;&#x306E;&#x8A2D;&#x5B9A;</td>
+      <td
+      style="text-align:left">350</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">DefaultHeadersMiddleware</td>
+      <td style="text-align:left">HTTP&#x30D8;&#x30C3;&#x30C0;&#x3092;&#x4ED8;&#x4E0E;</td>
+      <td style="text-align:left">400</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">UserAgentMiddleware</td>
+      <td style="text-align:left">
+        <p>&#x30B9;&#x30D1;&#x30A4;&#x30C0;&#x30FC;&#x304C;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;&#x306E;&#x30E6;&#x30FC;&#x30B6;&#x30FB;&#x30A8;&#x30FC;&#x30B8;&#x30A7;&#x30F3;&#x30C8;&#x3092;&#x30AA;&#x30FC;&#x30D0;&#x30FC;&#x30E9;&#x30A4;&#x30C9;&#x3067;&#x304D;&#x308B;&#x3088;&#x3046;&#x306B;&#x3059;&#x308B;&#x30DF;&#x30C9;&#x30EB;&#x30A6;&#x30A7;&#x30A2;&#x3002;</p>
+        <p>&#x30B9;&#x30D1;&#x30A4;&#x30C0;&#x30FC;&#x304C;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;&#x306E;&#x30E6;&#x30FC;&#x30B6;&#x30FC;&#x30FB;&#x30A8;&#x30FC;&#x30B8;&#x30A7;&#x30F3;&#x30C8;&#x3092;&#x4E0A;&#x66F8;&#x304D;&#x3059;&#x308B;&#x306B;&#x306F;&#x3001;&#x305D;&#x306E;
+          user_agent &#x5C5E;&#x6027;&#x3092;&#x8A2D;&#x5B9A;&#x3059;&#x308B;&#x5FC5;&#x8981;&#x304C;&#x3042;&#x308A;&#x307E;&#x3059;&#x3002;</p>
+      </td>
+      <td style="text-align:left">500</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">RetryMiddleware</td>
+      <td style="text-align:left">&#x63A5;&#x7D9A;&#x30BF;&#x30A4;&#x30E0;&#x30A2;&#x30A6;&#x30C8;&#x3084;HTTP
+        500&#x30A8;&#x30E9;&#x30FC;&#x306A;&#x3069;&#x306E;&#x4E00;&#x6642;&#x7684;&#x306A;&#x554F;&#x984C;&#x304C;&#x539F;&#x56E0;&#x3067;&#x3042;&#x308B;&#x53EF;&#x80FD;&#x6027;&#x306E;&#x3042;&#x308B;&#x5931;&#x6557;&#x3057;&#x305F;&#x8981;&#x6C42;&#x3092;&#x518D;&#x8A66;&#x884C;&#x3059;&#x308B;&#x30DF;&#x30C9;&#x30EB;&#x30A6;&#x30A7;&#x30A2;&#x3002;</td>
+      <td
+      style="text-align:left">550</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">AjaxCrawlMiddleware</td>
+      <td style="text-align:left">Ajax&#x30AF;&#x30ED;&#x30FC;&#x30EB;&#x53EF;&#x80FD;&#x306A;&#x30DA;&#x30FC;&#x30B8;&#x3092;&#x30AF;&#x30ED;&#x30FC;&#x30EB;&#x3057;&#x76F4;&#x3059;</td>
+      <td
+      style="text-align:left">560</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">MetaRefreshMiddleware</td>
+      <td style="text-align:left">meta refresh&#x30BF;&#x30B0;&#x306B;&#x3088;&#x308B;&#x30EA;&#x30C0;&#x30A4;&#x30EC;&#x30AF;&#x30C8;&#x51E6;&#x7406;</td>
+      <td
+      style="text-align:left">580</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">HttpCompressionMiddleware</td>
+      <td style="text-align:left">&#x5727;&#x7E2E;(gzip&#x3001;deflate)&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x3082;&#x306E;&#x3092;Web&#x30B5;&#x30A4;&#x30C8;&#x304B;&#x3089;&#x9001;&#x53D7;&#x4FE1;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;</td>
+      <td
+      style="text-align:left">590</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">RedirectMiddleware</td>
+      <td style="text-align:left">&#x30EA;&#x30C0;&#x30A4;&#x30EC;&#x30AF;&#x30C8;&#x3092;&#x51E6;&#x7406;&#x3059;&#x308B;</td>
+      <td
+      style="text-align:left">600</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">CookiesMiddleware</td>
+      <td style="text-align:left">&#x30BB;&#x30C3;&#x30B7;&#x30E7;&#x30F3;&#x3092;&#x4F7F;&#x7528;&#x3059;&#x308B;&#x30B5;&#x30A4;&#x30C8;&#x306A;&#x3069;&#x3001;&#x30AF;&#x30C3;&#x30AD;&#x30FC;&#x3092;&#x5FC5;&#x8981;&#x3068;&#x3059;&#x308B;&#x30B5;&#x30A4;&#x30C8;&#x3092;&#x64CD;&#x4F5C;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;Web&#x30B5;&#x30FC;&#x30D0;&#x30FC;&#x304C;&#x9001;&#x4FE1;&#x3057;&#x305F;&#x30AF;&#x30C3;&#x30AD;&#x30FC;&#x3092;&#x8FFD;&#x8DE1;&#x3057;&#x3001;Web&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x30FC;&#x304C;&#x884C;&#x3046;&#x3088;&#x3046;&#x306B;&#x3001;&#x305D;&#x306E;&#x5F8C;&#x306E;(&#x30B9;&#x30D1;&#x30A4;&#x30C0;&#x30FC;&#x304B;&#x3089;&#x306E;)&#x30EA;&#x30AF;&#x30A8;&#x30B9;&#x30C8;&#x3067;&#x305D;&#x308C;&#x3089;&#x3092;&#x9001;&#x308A;&#x8FD4;&#x3057;&#x307E;&#x3059;&#x3002;</td>
+      <td
+      style="text-align:left">700</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">HttpProxyMiddleware</td>
+      <td style="text-align:left">Request&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x306B;proxy&#x30E1;&#x30BF;&#x5024;&#x3092;&#x8A2D;&#x5B9A;&#x3059;&#x308B;&#x3053;&#x3068;&#x306B;&#x3088;&#x308A;&#x3001;&#x30EA;&#x30AF;&#x30A8;&#x30B9;&#x30C8;&#x306B;&#x4F7F;&#x7528;&#x3059;&#x308B;HTTP&#x30D7;&#x30ED;&#x30AD;&#x30B7;&#x3092;&#x8A2D;&#x5B9A;&#x3057;&#x307E;&#x3059;&#x3002;</td>
+      <td
+      style="text-align:left">750</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">DownloaderStats</td>
+      <td style="text-align:left">Downloader&#x306E;&#x7D71;&#x8A08;&#x60C5;&#x5831;&#x3092;&#x53CE;&#x96C6;&#x3059;&#x308B;</td>
+      <td
+      style="text-align:left">850</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">HttpCacheMiddleware</td>
+      <td style="text-align:left">HTTP&#x30AD;&#x30E3;&#x30C3;&#x30B7;&#x30E5;&#x3092;&#x51E6;&#x7406;&#x3059;&#x308B;</td>
+      <td
+      style="text-align:left">900</td>
+    </tr>
+  </tbody>
+</table>### Scrapyのアーキテクチャ
 
 クローラーを起動すると、どのようなことが内部で行われているのか、ドキュメントの画像をお借りしてまとめておく。
 
