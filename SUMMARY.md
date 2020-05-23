@@ -7,4 +7,5 @@
 * [第4章　Scrapy Tutorial1](chapter04_tutorial01.md)
 * [第5章　Scrapy ShellとXpath](chapter05_xpath.md)
 * [第6章　Scrapy Tutorial2](chapter06_tutorial02.md)
+* [第7章　ScrapyとMySQL](chapter07_mysql.md)
 

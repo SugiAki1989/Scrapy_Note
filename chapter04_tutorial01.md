@@ -133,7 +133,24 @@ if abs_next_page_url is not None:
     yield Request(abs_next_page_url, callback=self.parse)
 ```
 
-これで10ページ文の名言100個をスクレイピングする準備ができました。これを実行していきます。
+これで10ページ文の名言100個をスクレイピングする準備ができました。これを実行していきます。ページの移動のさせ方は下記のようにページ番号をインクリメントするように書いても問題ないです。
+
+```text
+class QuotesSpiderSpider(Spider):
+    name = 'quotes_spider'
+    allowed_domains = ['quotes.toscrape.com']
+    
+    page_number = 2
+    start_urls = ['http://quotes.toscrape.com/page/1/']
+
+    def parse(self, response):
+        【略】
+        
+        next_page = 'http://quotes.toscrape.com/page/' + str(QuoteSpider.page_number) + '/'
+        if QuoteSpider.page_number < 11:
+            QuoteSpider.page_number += 1
+            yield response.follow(next_page, callback=self.parse)
+```
 
 ### クローラーの実行
 
