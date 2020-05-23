@@ -18,7 +18,7 @@ $ scrapy genspider books_spider_mysql books.toscrape.com
 
 ### アイテムの定義\(MySQL\)
 
-Itemを定義していきます。これまで使ってきませんでしたが、Itemを定義する必要があります。Itemはスクレイピングしたデータを格納しておくためのオブジェクトで、ここに格納して、MySQLに保存するためのパイプラインにデータを流します。
+Items.pyを定義していきます。これまで使ってきませんでしたが、Itemを定義する必要があります。Itemはスクレイピングしたデータを格納しておくためのオブジェクトで、ここに格納して、MySQLに保存するためのパイプラインにデータを流します。
 
 また、Itemを定義することで、タイポによるカラム名の間違いがあればエラーを返すようになります。指定の仕方は「名前=scrapy.Field\(\)」で、タイトル、価格、URLを保存するようにします。
 
@@ -33,7 +33,7 @@ class BooksMysqlItem(scrapy.Item):
 
 ### クローラーの設計
 
-Itemにあわせて、不要な項目を削除しています。スクレイピングした情報はItemクラスのコンストラクタ`BooksMysqlItem`で初期化した後に、キーを指定して渡します。その他はこれまでと変わりません。
+Itemにあわせて、books\_spider\_mysql.pyの中の項目を削除しています。スクレイピングした情報はItemクラスのコンストラクタ`BooksMysqlItem`で初期化した後に、キーを指定して渡します。その他はこれまでと変わりません。
 
 ```text
 from scrapy import Spider
@@ -67,7 +67,7 @@ class BooksSpiderMysqlSpider(Spider):
 
 ### パイプラインの設計
 
-Itemに保存されているデータをMySQLにインサートするためのパイプラインを記述していきます。ここでは、pymysqlを使用します。書き方はいろんな方法があると思いますが、ここでは「データベースにコネクションを作る関数」「データベースに重複チェックをしてインサートする関数」「データベースのコネクションをクローズする関数」に分けています。
+Itemに保存されているデータをMySQLにインサートするためのパイプラインをpipelines.pyに記述していきます。ここでは、pymysqlを使用します。書き方はいろんな方法があると思いますが、ここでは「データベースにコネクションを作る関数」「データベースに重複チェックをしてインサートする関数」「データベースのコネクションをクローズする関数」に分けています。
 
 「データベースに重複チェックをしてインサートする関数」では、Itemのタイトルを取り出して、データベースを検索をかけ、データベースにない値であれば、インサートするという仕組みにしています。定期的にクローラーを動かす際に、この重複チェックがないと、同じレコードがインサートされていき、いざ分析となった際に非常に面倒です。
 
@@ -114,7 +114,7 @@ The Star-Touched Queenが重複している書籍のタイトルです。
 
 ### 環境設定
 
-ああああああ
+パイプラインを有効にするために、settings.pyを有効にします。番号はデータベースへの格納なので、順序としては遅くても大丈夫なので、800としています。
 
 ```text
 # Configure item pipelines
@@ -126,7 +126,7 @@ ITEM_PIPELINES = {
 
 ### テーブルの定義\(MySQL\)
 
-ああああああ
+ここまで準備ができたら、MySQLにデータベース、テーブルを作成します。itemの内容に沿ってテーブルを作成します。
 
 ```text
 mysql> CREATE DATABASE book_online;
@@ -140,7 +140,7 @@ mysql> CREATE TABLE books(id INT NOT NULL AUTO_INCREMENT,
 
 ### クローラーを実行する
 
-ああああ
+すべての準備が整ったので、クローラーを実行します。
 
 ```text
 $ scrapy crawl books_spider_mysql
@@ -155,5 +155,27 @@ mysql> select count(1) from books;
 +----------+
 |      999 |
 +----------+
+
+mysql> select * from books limit 5;
++----+---------------------------------------+---------+-----------------------------------------------------------------------------------------+
+| id | title                                 | price   | detail_page_url                                                                         |
++----+---------------------------------------+---------+-----------------------------------------------------------------------------------------+
+|  1 | A Light in the Attic                  | £51.77  | http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html                |
+|  2 | Tipping the Velvet                    | £53.74  | http://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html                   |
+|  3 | Soumission                            | £50.10  | http://books.toscrape.com/catalogue/soumission_998/index.html                           |
+|  4 | Sharp Objects                         | £47.82  | http://books.toscrape.com/catalogue/sharp-objects_997/index.html                        |
+|  5 | Sapiens: A Brief History of Humankind | £54.23  | http://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html |
++----+---------------------------------------+---------+-----------------------------------------------------------------------------------------+
+
+mysql> select * from books order by id desc limit 5;
++-----+-----------------------------------------------------------+---------+----------------------------------------------------------------------------------------------+
+| id  | title                                                     | price   | detail_page_url                                                                              |
++-----+-----------------------------------------------------------+---------+----------------------------------------------------------------------------------------------+
+| 999 | 1,000 Places to See Before You Die                        | £26.08  | http://books.toscrape.com/1000-places-to-see-before-you-die_1/index.html                     |
+| 998 | 1st to Die (Women's Murder Club #1)                       | £53.98  | http://books.toscrape.com/1st-to-die-womens-murder-club-1_2/index.html                       |
+| 997 | A Spy's Devotion (The Regency Spies of London #1)         | £16.97  | http://books.toscrape.com/a-spys-devotion-the-regency-spies-of-london-1_3/index.html         |
+| 996 | Ajin: Demi-Human, Volume 1 (Ajin: Demi-Human #1)          | £57.06  | http://books.toscrape.com/ajin-demi-human-volume-1-ajin-demi-human-1_4/index.html            |
+| 995 | Alice in Wonderland (Alice's Adventures in Wonderland #1) | £55.53  | http://books.toscrape.com/alice-in-wonderland-alices-adventures-in-wonderland-1_5/index.html |
++-----+-----------------------------------------------------------+---------+----------------------------------------------------------------------------------------------+
 ```
 
