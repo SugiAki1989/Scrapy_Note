@@ -18,9 +18,9 @@ $ scrapy genspider books_spider_mysql books.toscrape.com
 
 ### アイテムの定義MySQL
 
-アイテムを定義していきます。これまで使ってきませんでしたが、アイテムを定義する必要があります。アイテムはスクレイピングしたデータを格納しておくためのオブジェクトで、ここに格納して、MySQLに保存するためのパイプラインにデータを流します。
+Itemを定義していきます。これまで使ってきませんでしたが、Itemを定義する必要があります。Itemはスクレイピングしたデータを格納しておくためのオブジェクトで、ここに格納して、MySQLに保存するためのパイプラインにデータを流します。
 
-また、アイテムを定義することで、タイポによるカラム名の間違いがあればエラーを返すようになります。指定の仕方は「名前=scrapy.Field\(\)」です。
+また、Itemを定義することで、タイポによるカラム名の間違いがあればエラーを返すようになります。指定の仕方は「名前=scrapy.Field\(\)」で、タイトル、価格、URLを保存するようにします。
 
 ```text
 import scrapy
@@ -33,12 +33,12 @@ class BooksMysqlItem(scrapy.Item):
 
 ### クローラーの設計
 
-チュー
+Itemにあわせて、不要な項目を削除しています。スクレイピングした情報はItemクラスのコンストラクタ`BooksMysqlItem`で初期化した後に、キーを指定して渡します。その他はこれまでと変わりません。
 
 ```text
 from scrapy import Spider
 from scrapy.http import Request
-from sample_books_mysql.items import BooksMysqlItem
+from sample_books_mysql.items import BooksMysqlItem　#忘れずにインポートする
 
 class BooksSpiderMysqlSpider(Spider):
     name = 'books_spider_mysql'
@@ -67,7 +67,7 @@ class BooksSpiderMysqlSpider(Spider):
 
 ### パイプラインの設計
 
-ああああ
+Itemに保存されているデータをMySQLにインサートするためのパイプラインを記述していきます。
 
 ```text
 import pymysql
