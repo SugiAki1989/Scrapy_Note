@@ -8,12 +8,25 @@
 
 ### プロジェクトの作成
 
-まずはプロジェクトを作成します。ここではプロジェクトの名前は「sample\_quotes」で、クローラーの名前を「quotes\_spider」としています。プロジェクトを作ったら、settings.pyの中身を礼儀が正しいように書き換えるのは忘れずに行います。
+まずはプロジェクトを作成します。ここではプロジェクトの名前は「sample\_quotes」で、クローラーの名前を「quotes\_spider」としています。プロジェクトを作ったら、settings.pyの中身を礼儀が正しいように書き換えるのは忘れずに行います。\*\*今回は「spiders/quotes\_spider.py」と「settings.py」だけ使います。これだけでも動かせるので。
 
 ```text
 $ scrapy startproject sample_quotes
 $ cd sample_quotes
 $ scrapy genspider quotes_spider quotes.toscrape.com
+
+$ tree
+.
+├── sample_quotes
+│   ├── __init__.py
+│   ├── items.py
+│   ├── middlewares.py
+│   ├── pipelines.py
+│   ├── settings.py **これ**
+│   └── spiders
+│       ├── __init__.py
+│       └── quotes_spider.py **これ**
+└── scrapy.cfg
 ```
 
 ### HTML構造の調査と設計
@@ -39,7 +52,7 @@ In [1]: response
 Out[1]: <200 http://quotes.toscrape.com/>
 ```
 
-まずはブロックの部分を取得します。ブロックの部分は、classがすべて「quote」なので、それをxpathに渡します。cssセレクタで指定することも可能ですが、ここでは、xpathにしぼります。
+まずはブロックの部分を取得します。ブロックの部分は、classがすべて「quote」なので、それをxpathに渡します。cssセレクタで指定することも可能ですが、ここでは、xpathにしぼります。xpathセレクターの使い方は、ドキュメントの[Selectors](https://docs.scrapy.org/en/latest/topics/selectors.html)を参照してください。
 
 ```text
 In [2]: response.xpath('//*[@class="quote"]')                                                                                           
@@ -71,6 +84,48 @@ In [5]: quote = quotes[0]
 
 In [6]: quote.xpath('.//*[@class="text"]/text()').get()                                                                                 
 Out[6]: '“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”'
+```
+
+次は、同じ要領で「名前」と「タグ」をスクレイピングします。
+
+```text
+In [7]: quote.xpath('.//*[@class="author"]/text()').get()                                                                               
+Out[7]: 'Albert Einstein'
+
+In [8]: quote.xpath('.//*[@class="tag"]/text()').getall()                                                                               
+Out[8]: ['change', 'deep-thoughts', 'thinking', 'world']
+```
+
+これでスクレイピングしたい情報のコードが書けました。これをブロックごとに繰り返したいので、下記のようにfor-loopで書き直し、取得した値はyieldで出力します。
+
+```text
+quotes = response.xpath('//*[@class="quote"]')
+
+for quote in quotes:
+    text = quote.xpath('.//*[@class="text"]/text()').get()
+    author = quote.xpath('.//*[@class="author"]/text()').get()
+    tags = quote.xpath('.//*[@class="tag"]/text()').getall()
+
+    yield {
+        "text": text,
+        "author": author,
+        "tags": tags
+    }
+```
+
+このページ1枚であればこれで良いのですが、全部で10ページあるので、次のページにクローラーを動かせるように、コードを追加します。次のページへの判断は「Next」があるかどうかで判断させます。10ページを見ると「Next」がないので、これ以上はクローラーは進まなくなります。
+
+「Next」があるかどうかを調べるためにScrapy Shellで確認します。このボタンはclassが「next」でa要素に次のページへのURLがついているので、それがあるかないかで判定します。
+
+```text
+In [9]: response.xpath('//*[@class="next"]/a/@href').get()                                                                              
+Out[9]: '/page/2/'
+```
+
+URLがあるかどうかで判定するのはこれで良いのですが、クローラーがこの相対パスのURLでは移動できません。なので、完全パスにURLをurljoinで修正します。
+
+```text
+
 ```
 
 ### クローラーの実行
