@@ -10,7 +10,9 @@
 
 XPath \(XML Path Language\)は、XML形式のドキュメントから、特定の部分を指定して抽出するための言語です。HTML形式のドキュメントにも対応するため、これを使うことで、Webページの特定の部分をスクレイピングできます。
 
-基本的な文法は下記のとおりです。[Wikipedia](https://ja.wikipedia.org/wiki/XML_Path_Language#.E5.AE.8C.E5.85.A8.E3.81.AA.E6.A7.8B.E6.96.87)にも豊富に記述があります。
+基本的な文法は下記のとおりです。[Wikipedia](https://ja.wikipedia.org/wiki/XML_Path_Language#.E5.AE.8C.E5.85.A8.E3.81.AA.E6.A7.8B.E6.96.87)にも豊富に記述がありますし、下記の記事は非常にわかりやすいです。
+
+* [クローラ作成に必須！XPATHの記法まとめ](https://qiita.com/rllllho/items/cb1187cec0fb17fc650a)
 
 | Xpath | 内容 |
 | :--- | :--- |
@@ -55,9 +57,11 @@ In [9]: response.xpath('.//h1/text()').get()
 Out[9]: 'XPath Tester / Evaluator'
 ```
 
-### Scrapy Shellとは
+### Scrapy ShellでXpathを理解する
 
-Scrapy Shellを使って、下記のサイトのすべての値を取得する方法をまとめておきます。
+XpathをChromeでコピーして、そのままペーストすればうまくいくことは、個人的な経験だとあまり多くはないので、Xpathを記述できるようになっておくほうが良いと思います。
+
+Scrapy Shellを使って、下記のサイトの**すべての値**を取得する方法をまとめておきます。
 
 * [Books to Scrape](http://books.toscrape.com/)
 
@@ -69,7 +73,7 @@ $ scrapy shell 'http://books.toscrape.com/'
 
 #### タイトル
 
-タイトルの「Books to Scrape We love being scraped!」を取得する。
+タイトルの「Books to Scrape We love being scraped!」を取得します。
 
 ```text
 In [20]: response.xpath('//*[@class="col-sm-8 h1"]/a/text()').get()                                                                                                                  
@@ -81,7 +85,7 @@ Out[22]: ' We love being scraped!'
 
 #### Homeボタン
 
-タイトルの下にあるHomeボタンの文字とURLを取得する。
+タイトルの下にあるHomeボタンの文字とURLを取得します。
 
 ```text
 In [23]: response.xpath('//*[@class="breadcrumb"]/li/a/text()').get()                                                                                                                
@@ -96,7 +100,7 @@ Out[28]: 'http://books.toscrape.com/index.html'
 
 #### Homeボタン横の文字
 
-タイトルの下にあるHomeボタンの横の「All products」の文字を取得する。
+タイトルの下にあるHomeボタンの横の「All products」の文字を取得します。
 
 ```text
 In [30]: response.xpath('//*[@class="active"]/text()').get()                                                                                                                         
@@ -105,7 +109,7 @@ Out[30]: 'All products'
 
 #### ナビゲーションのタイトル
 
-左端のナビゲーションのタイトルの「Book」の文字とURLを取得する。
+左端のナビゲーションのタイトルの「Book」の文字とURLを取得します。
 
 ```text
 In [32]: str = response.xpath('//*[@class="nav nav-list"]/li/a/text()').get()
@@ -118,7 +122,7 @@ Out[45]: 'catalogue/category/books_1/index.html'
 
 #### ナビゲーションのリスト
 
-左端のナビゲーションのリストの文字とURLをとる。
+左端のナビゲーションのリストの文字とURLを取得します。
 
 ```text
 In [91]: response.xpath('//*[@class="side_categories"]/ul/li/ul/li/a/@href').getall()                                                                                                
@@ -144,7 +148,7 @@ In [105]: list = []
 
 #### 書籍一覧のタイトル
 
-書籍一覧のタイトルの「All products」という文字を取得する。
+書籍一覧のタイトルの「All products」という文字を取得します。
 
 ```text
 In [108]: response.xpath('//h1/text()').get()                                                                                                                                        
@@ -153,7 +157,7 @@ Out[108]: 'All products'
 
 #### ページャの部分
 
-書籍一覧のタイトルの下の「1000 results - showing 1 to 20.」の部分を取得する。ソースを見るとこれ以上辿れないので、`following-sibling::text()`で子孫を取得するようにしている。
+書籍一覧のタイトルの下の「1000 results - showing 1 to 20.」の部分を取得します。ソースを見るとこれ以上辿れないので、`following-sibling::text()`で子孫を取得するようにしています。
 
 ```text
 In [114]: response.xpath('//*[@class="form-horizontal"]/strong/text()').getall()                                                                                                     
@@ -168,7 +172,7 @@ Out[116]:
 
 #### ワーニングの部分
 
-書籍一覧のタイトルの下の「ワーニング」の文字列を取得する。
+書籍一覧のタイトルの下の「ワーニング」の文字列を取得します。
 
 ```text
 In [118]: response.xpath('//*[@class="alert alert-warning"]/strong/text()').get()                                                                                                    
@@ -180,7 +184,7 @@ Out[119]: ' This is a demo website for web scraping purposes. Prices and ratings
 
 #### 書籍の画像のURL
 
-書籍の画像のURLを取得する。
+書籍の画像のURLを取得します。画像のURLを取得できれば、Scrapyで画像のダウンロードも可能です。
 
 ```text
 In [122]: response.xpath('//*[@class="image_container"]/a/@href').getall()                                                                                                           
@@ -209,7 +213,7 @@ Out[122]:
 
 #### 書籍のタイトル
 
-書籍のタイトルを取得する。
+書籍のタイトルを取得します。
 
 ```text
 In [155]: response.xpath('//h3/a/text()').getall()                                                                                                                                   
@@ -238,7 +242,7 @@ Out[155]:
 
 #### レビューの星
 
-レビューの星の数を取得する。ソースを見るとわかるが、一筋縄ではいかないので、`contains(@class, "star-rating")]`として、`star-rating`を含むクラスを取るようにしている。
+レビューの星の数を取得します。ソースを見るとわかりますが、一筋縄ではいかないので、`contains(@class, "star-rating")]`として、`star-rating`を含むクラスを取るようにしています。
 
 ```text
 In [125]: response.xpath('//*[contains(@class, "star-rating")]/@class').getall()                                                                                                     
@@ -254,7 +258,7 @@ Out[125]:
 
 #### 書籍の金額
 
-書籍の金額を取得する。
+書籍の金額を取得します。
 
 ```text
 In [127]: response.xpath('//*[@class="price_color"]/text()').getall()                                                                                                                
@@ -283,7 +287,7 @@ Out[127]:
 
 #### 書籍の在庫ステータス
 
-書籍の在庫ステータス「In stock」を取得する。これで取ると、同じ階層の`i`タグの空テキストも入るので20個のはずが40個返る。
+書籍の在庫ステータス「In stock」を取得します。これで取ると、同じ階層の`i`タグの空テキストも入るので20個のはずが40個返ってきます。
 
 ```text
 In [131]: response.xpath('//*[@class="instock availability"]/text()').getall()                                                                                                       
@@ -298,7 +302,7 @@ Out[131]:
  '\n    \n        In stock\n    \n']
 ```
 
-なので、１つ上の階層から`following-sibling::text()`でノードと同じ階層にあり、かつ後に出てくる兄弟ノードの集合を取る。後は改行と空白を削除する。
+なので、１つ上の階層から`following-sibling::text()`でノードと同じ階層にあり、かつ後に出てくる兄弟ノードの集合を取ります。後は改行と空白を削除します。
 
 ```text
 In [152]: response.xpath('//*[@class="icon-ok"]/following-sibling::text()').getall()                                                                                                 
@@ -314,7 +318,7 @@ Out[152]:
 
 #### カートに入れるボタン
 
-カートに入れるボタンの文字を取得する。
+カートに入れるボタンの文字を取得します。
 
 ```text
 In [154]: response.xpath('//*[@class="btn btn-primary btn-block"]/text()').getall()                                                                                                  
@@ -343,7 +347,7 @@ Out[154]:
 
 #### 1番下のページャ
 
-1番下のページャの文字を取得する。
+1番下のページャの文字を取得します。
 
 ```text
 In [159]: response.xpath('//*[@class="current"]/text()').get()                                                                                                                       
@@ -352,7 +356,7 @@ Out[159]: '\n            \n                Page 1 of 50\n            \n         
 
 #### 1番下のNextボタン
 
-1番下のNextボタンの文字とURLを取得する。
+1番下のNextボタンの文字とURLを取得します。
 
 ```text
 In [166]: response.xpath('//*[@class="next"]/a/@href').get()                                                                                                                         
@@ -364,7 +368,7 @@ Out[167]: 'next'
 
 ### 書籍の詳細ページ
 
-ここからは[書籍の詳細ページ](http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html)の中身の情報を全部とってみます。
+ここからは[書籍の詳細ページ](http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html)の中身の情報を全部、取得します。
 
 ```
 $ scrapy shell 'http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html'
@@ -374,7 +378,7 @@ $ scrapy shell 'http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/in
 
 #### パンくずリストの商品名
 
-パンくずリストのパンくずと商品名を取る。
+パンくずリストのパンくずと商品名を取得します。
 
 ```text
 In [11]: response.xpath('//*[@class="breadcrumb"]/li/a/text()').getall()                                                                                      
@@ -386,7 +390,7 @@ Out[6]: 'A Light in the Attic'
 
 #### 商品画像のURL
 
-商品画像のURLをとる。
+商品画像のURLを取得します。
 
 ```text
 In [12]: response.xpath('//*[@class="item active"]/img/@src').get()                                                                                           
@@ -395,7 +399,7 @@ Out[12]: '../../media/cache/fe/72/fe72f0532301ec28892ae79a629a293c.jpg'
 
 #### 商品名、金額、ステータス
 
-商品名、金額、ステータスを取得する
+商品名、金額、ステータスを取得します。
 
 ```text
 In [14]: response.xpath('//h1/text()').get()                                                                                                                  
@@ -413,7 +417,7 @@ Out[22]: 'star-rating Three'
 
 #### 説明文のタイトルと説明文
 
-説明文のタイトルと説明文を取得する。クラスが`product_description`のノードと同じ階層にあり、かつ後に出てくる兄弟ノードの`p`の集合からテキストを取る。
+説明文のタイトルと説明文を取得します。クラスが`product_description`のノードと同じ階層にあり、かつ後に出てくる兄弟ノードの`p`の集合からテキストを取得します。
 
 ```text
 In [24]: response.xpath('//h2/text()').get()                                                                                                                  
@@ -425,7 +429,7 @@ Out[30]: "It's hard to imagine a world without A Light in the Attic. This now-cl
 
 #### 商品の情報一覧
 
-商品の情報一覧をすべて取得する。
+商品の情報一覧をすべて取得します。
 
 ```text
 In [60]: response.xpath('//th[text()="UPC"]/following-sibling::td/text()').get()                                                                              
@@ -450,7 +454,7 @@ In [67]: response.xpath('//th[text()="Number of reviews"]/following-sibling::td/
 Out[67]: '0'
 ```
 
-同じことを繰り返し書くの大変なので、テーブルなんかは名前を返るだけで値がとれるので、そのための関数を書く。
+同じことを繰り返し書くの大変なので、テーブルなんかは名前を変更するだけで値がとれるので、そのための関数を書いておくと便利です。
 
 ```text
 n [68]: def table_info(response, name): 
