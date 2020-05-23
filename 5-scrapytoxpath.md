@@ -10,7 +10,7 @@
 
 XPath \(XML Path Language\)は、XML形式のドキュメントから、特定の部分を指定して抽出するための言語です。HTML形式のドキュメントにも対応するため、これを使うことで、Webページの特定の部分をスクレイピングできます。
 
-基本的な文法は下記のとおりです。
+基本的な文法は下記のとおりです。[Wikipedia](https://ja.wikipedia.org/wiki/XML_Path_Language#.E5.AE.8C.E5.85.A8.E3.81.AA.E6.A7.8B.E6.96.87)にも豊富に記述があります。
 
 | Xpath | 内容 |
 | :--- | :--- |
@@ -26,17 +26,34 @@ XPath \(XML Path Language\)は、XML形式のドキュメントから、特定�
 | .//\*\[contains\(@class, 'Next'\)\] | Next”という文字列を含むクラス属性を選択 |
 | //h1/following-sibling::p\[1\] | h1要素の下の1番目の要素を選択 |
 
-### Xpathを取得する方法
+### Xpathの取得方法
 
-Google ChromeでXPathを取得する簡単な方法を紹介します。
+Google ChromeでXPathを取得する簡単な方法を紹介します。ここではh1のタイトルを指定したいとします。
 
 1. Google ChromeでWebページを開きます。
-2. 抽出するテキスト部分を選択します。
+2. 抽出するh1のテキスト部分を選択します。
 3. 右クリックして「検証」を選択します。
 4. 必要なHTMLコードを選択し、\[Copy\]、\[Copy XPath\]の順に選択します。
 5. XPathをコードに貼り付け、テストし、必要に応じて編集します。
 
 ![Getting Xpath](.gitbook/assets/sukurnshotto-2020-05-24-03252png.png)
+
+コピーすると、下記のようなXpathが取得できます。これを参考にXpathを記述します。
+
+```text
+/html/body/div[2]/div[2]/div[1]/h1
+
+$ scrapy shell "https://www.freeformatter.com/xpath-tester.html"
+In [4]: response.xpath('/html/body/div[2]/div[2]/div[1]/h1/text()').get()                                                               
+Out[4]: 'XPath Tester / Evaluator'
+```
+
+もちろんフルパスで指定しなくても特定できるのであれば、省略が可能です。
+
+```text
+In [9]: response.xpath('.//h1/text()').get()                                                                                            
+Out[9]: 'XPath Tester / Evaluator'
+```
 
 ### Scrapy Shellとは
 
