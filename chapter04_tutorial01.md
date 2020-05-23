@@ -1,4 +1,4 @@
-# 第4章　Scrapy Tutorial
+# 第4章　Scrapy Tutorial1
 
 ## はじめに
 
@@ -10,7 +10,7 @@
 
 まずはプロジェクトを作成します。ここではプロジェクトの名前は「sample\_quotes」で、クローラーの名前を「quotes\_spider」としています。プロジェクトを作ったら、settings.pyの中身を礼儀が正しいように書き換えるのは忘れずに行います。
 
-\*\*今回は「spiders/quotes\_spider.py」と「settings.py」だけ使います。これだけでも動かせるので。
+今回は「spiders/quotes\_spider.py」と「settings.py」だけ使います。これだけでも動かせるので。
 
 ```text
 $ scrapy startproject sample_quotes
@@ -31,7 +31,7 @@ $ tree
 └── scrapy.cfg
 ```
 
-### HTML構造の調査と設計
+### HTML構造の調査とクローラーの設計
 
 スクレイピングする前に、スクレイピングするページのHTML構造を確認します。こんページであれば、黒枠のブロックごとに青い線の「名言」、赤い線の「名前」、黄色い線の「タグ」が同じようなレイアウトで表示されています。
 
