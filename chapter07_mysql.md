@@ -6,19 +6,24 @@
 
 ### プロジェクトの作成
 
+対象にするサイトは、チュートリアル2で使った架空のオンライン書店のサイトです。チュートリアル2のコードをベースにMySQLに連携できるように書き換えます。ではプロジェクトを作成します。
+
+* [Books to scrape](http://books.toscrape.com/)
+
 ```text
 $ scrapy startproject sample_books_mysql
 $ cd sample_books_mysql
 $ scrapy genspider books_spider_mysql books.toscrape.com
 ```
 
-### アイテムの定義
+### アイテムの定義MySQL
 
-あああ
+アイテムを定義していきます。これまで使ってきませんでしたが、アイテムを定義する必要があります。アイテムはスクレイピングしたデータを格納しておくためのオブジェクトで、ここに格納して、MySQLに保存するためのパイプラインにデータを流します。
+
+また、アイテムを定義することで、タイポによるカラム名の間違いがあればエラーを返すようになります。指定の仕方は「名前=scrapy.Field\(\)」です。
 
 ```text
 import scrapy
-
 
 class BooksMysqlItem(scrapy.Item):
         title = scrapy.Field()
@@ -28,7 +33,7 @@ class BooksMysqlItem(scrapy.Item):
 
 ### クローラーの設計
 
-ああああああああああ
+チュー
 
 ```text
 from scrapy import Spider
