@@ -200,7 +200,7 @@ $ cat result.json | head -n 10
 
 `scrapy crawl`コマンドでクローラーを実行すると大量のログが出力されますが、これがどのようなログなのか、まとめていきます。ある程度のブロックごとに小分けして内容をまとめます。
 
-まずは
+まずは最初の数行を確認します。ここらへんは、scrapyのバージョンとか、関連するライブラリのバージョン、クローラーの名前、書き出し形式やそのファイル名、robots.txtに従うかどうか、みたいなことが書いてあります。
 
 ```text
 $ scrapy crawl quotes_spider -o result.json
@@ -216,9 +216,51 @@ $ scrapy crawl quotes_spider -o result.json
  'SPIDER_MODULES': ['sample_quotes.spiders']}
 ```
 
+ここらへんの行は、middlewareの設定が書いてあります。さきほどの部分でROBOTSTXT\_OBEYがTrueになっていましたが、このmiddlewareの中で、RobotsTxtMiddleware\(9行目\)が有効になっていることもわかります。どのタイミングでMidllewareによってパイプラインが拡張されるのかは、ScrapyのアーキテクチャのMiddlewareの部分を見ればわかると思います。
 
+```text
+2020-05-23 22:42:28 [scrapy.extensions.telnet] INFO: Telnet Password: ceeba081f7327fad
+2020-05-23 22:42:28 [scrapy.middleware] INFO: Enabled extensions:
+['scrapy.extensions.corestats.CoreStats',
+ 'scrapy.extensions.telnet.TelnetConsole',
+ 'scrapy.extensions.memusage.MemoryUsage',
+ 'scrapy.extensions.feedexport.FeedExporter',
+ 'scrapy.extensions.logstats.LogStats']
+2020-05-23 22:42:28 [scrapy.middleware] INFO: Enabled downloader middlewares:
+['scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware',
+ 'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
+ 'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
+ 'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware',
+ 'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware',
+ 'scrapy.downloadermiddlewares.retry.RetryMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware',
+ 'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware',
+ 'scrapy.downloadermiddlewares.redirect.RedirectMiddleware',
+ 'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
+ 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
+ 'scrapy.downloadermiddlewares.stats.DownloaderStats']
+2020-05-23 22:42:28 [scrapy.middleware] INFO: Enabled spider middlewares:
+['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
+ 'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
+ 'scrapy.spidermiddlewares.referer.RefererMiddleware',
+ 'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
+ 'scrapy.spidermiddlewares.depth.DepthMiddleware']
+2020-05-23 22:42:28 [scrapy.middleware] INFO: Enabled item pipelines:
+[]
+```
 
+続きを進めていきます。
 
+```text
+2020-05-23 22:42:28 [scrapy.core.engine] INFO: Spider opened
+2020-05-23 22:42:28 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2020-05-23 22:42:28 [scrapy.extensions.telnet] INFO: Telnet console listening on 127.0.0.1:6024
+2020-05-23 22:42:29 [scrapy.core.engine] DEBUG: Crawled (404) <GET http://quotes.toscrape.com/robots.txt> (referer: None)
+2020-05-23 22:42:30 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://quotes.toscrape.com/> (referer: None)
+2020-05-23 22:42:30 [scrapy.core.scraper] DEBUG: Scraped from <200 http://quotes.toscrape.com/>
+{'text': '“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”', 'author': 'Albert Einstein', 'tags': ['change', 'deep-thoughts', 'thinking', 'world']}
+
+```
 
 
 
