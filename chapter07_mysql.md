@@ -16,7 +16,7 @@ $ cd sample_books_mysql
 $ scrapy genspider books_spider_mysql books.toscrape.com
 ```
 
-### アイテムの定義MySQL
+### アイテムの定義\(MySQL\)
 
 Itemを定義していきます。これまで使ってきませんでしたが、Itemを定義する必要があります。Itemはスクレイピングしたデータを格納しておくためのオブジェクトで、ここに格納して、MySQLに保存するためのパイプラインにデータを流します。
 
@@ -67,7 +67,11 @@ class BooksSpiderMysqlSpider(Spider):
 
 ### パイプラインの設計
 
-Itemに保存されているデータをMySQLにインサートするためのパイプラインを記述していきます。
+Itemに保存されているデータをMySQLにインサートするためのパイプラインを記述していきます。ここでは、pymysqlを使用します。書き方はいろんな方法があると思いますが、ここでは「データベースにコネクションを作る関数」「データベースに重複チェックをしてインサートする関数」「データベースのコネクションをクローズする関数」に分けています。
+
+「データベースに重複チェックをしてインサートする関数」では、Itemのタイトルを取り出して、データベースを検索をかけ、データベースにない値であれば、インサートするという仕組みにしています。定期的にクローラーを動かす際に、この重複チェックがないと、同じレコードがインサートされていき、いざ分析となった際に非常に面倒です。
+
+ちなみに、このサイトでは書籍のタイトルが重複しているため、この関数のチェックに引っかかり、999件しかインサートされません。本当は、ユニークなIDなどで確認するべきです。でなければ、今回のようにタイトルは同じでも、金額やURLが異なるものが取得できません。
 
 ```text
 import pymysql
@@ -87,7 +91,6 @@ class BooksMysqlPipeline:
     def process_item(self, item, spider):
         # duplication check
         check_title_id = item["title"]
-        print(check_title_id)
         find_qry = "SELECT `title` FROM `books` WHERE `title` = %s"
         is_done = self.cursor.execute(find_qry, check_title_id)
 
@@ -104,6 +107,8 @@ class BooksMysqlPipeline:
     def close_spider(self, spider):
         self.connection.close()
 ```
+
+The Star-Touched Queenが重複している書籍のタイトルです。
 
 ![Title duplication](.gitbook/assets/sukurnshotto-2020-05-24-45010png.png)
 
