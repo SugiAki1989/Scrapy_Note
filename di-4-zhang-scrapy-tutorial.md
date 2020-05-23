@@ -170,7 +170,11 @@ class QuotesSpiderSpider(Spider):
             yield Request(abs_next_page_url, callback=self.parse)
 ```
 
-`scrapy crawl`コマンドで実行します。ここではJSONで書き出します。大量のログとともに、スクレイピングされていきます。
+このクローラーのイメージを書くとこんな感じになります。
+
+![Image of Crawler](.gitbook/assets/img_188a22c171b1-1.jpeg)
+
+では、`scrapy crawl`コマンドでクローラーを実行します。ここではJSONで書き出します。大量のログとともに、スクレイピングされていきます。
 
 ```text
 $ scrapy crawl quotes_spider -o result.json
