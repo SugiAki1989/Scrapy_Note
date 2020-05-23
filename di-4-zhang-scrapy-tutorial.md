@@ -26,7 +26,52 @@ $ scrapy genspider quotes_spider quotes.toscrape.com
 
 ![Structure of HTML](.gitbook/assets/sukurnshotto-2020-05-23-214926png.png)
 
-これであれば、ブロックを取得→詳細をスクレイピング→次のブロック→詳細をスクレイピングということを繰り返せば取得できそうです。
+これであれば、「ブロックを取得→詳細をスクレイピング→次のブロック→詳細をスクレイピング」ということを繰り返せば取得できそうです。実際に値がとれるか、Scrapy Shellを利用して確認します。
+
+### Scrapy Shell
+
+URLを渡して、Scrapy Shellでレスポンスを受け取ります。
+
+```text
+$ scrapy shell "http://quotes.toscrape.com/"
+
+In [1]: response                                                                                                                        
+Out[1]: <200 http://quotes.toscrape.com/>
+```
+
+まずはブロックの部分を取得します。ブロックの部分は、classがすべて「quote」なので、それをxpathに渡します。cssセレクタで指定することも可能ですが、ここでは、xpathにしぼります。
+
+```text
+In [2]: response.xpath('//*[@class="quote"]')                                                                                           
+Out[2]: 
+[<Selector xpath='//*[@class="quote"]' data='<div class="quote" itemscope itemtype...'>,
+ <Selector xpath='//*[@class="quote"]' data='<div class="quote" itemscope itemtype...'>,
+ <Selector xpath='//*[@class="quote"]' data='<div class="quote" itemscope itemtype...'>,
+ <Selector xpath='//*[@class="quote"]' data='<div class="quote" itemscope itemtype...'>,
+ <Selector xpath='//*[@class="quote"]' data='<div class="quote" itemscope itemtype...'>,
+ <Selector xpath='//*[@class="quote"]' data='<div class="quote" itemscope itemtype...'>,
+ <Selector xpath='//*[@class="quote"]' data='<div class="quote" itemscope itemtype...'>,
+ <Selector xpath='//*[@class="quote"]' data='<div class="quote" itemscope itemtype...'>,
+ <Selector xpath='//*[@class="quote"]' data='<div class="quote" itemscope itemtype...'>,
+ <Selector xpath='//*[@class="quote"]' data='<div class="quote" itemscope itemtype...'>]
+```
+
+数を数えてみると、10が返ってきます。ページの名言ブロックと一致しているのでOKですね。次は詳細部分をスクレイピングします。
+
+```text
+In [3]: len(response.xpath('//*[@class="quote"]')   )                                                                                   
+Out[3]: 10
+```
+
+まずは名言を取得します。まずは、1番上のブロックをquoteに格納します。そして、quoteを使って、名言部分を先ほどと同じようにxpathで指定します。名言は、classがすべて「text」なので、それをxpathに渡します。
+
+```text
+In [4]: quotes = response.xpath('//*[@class="quote"]')                                                                                  
+In [5]: quote = quotes[0]                                                                                                               
+
+In [6]: quote.xpath('.//*[@class="text"]/text()').get()                                                                                 
+Out[6]: '“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”'
+```
 
 ### クローラーの実行
 
