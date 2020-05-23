@@ -8,6 +8,12 @@
 
 ### プロジェクトの作成
 
+```text
+$ scrapy startproject sample_quotes
+$ cd sample_quotes
+$ scrapy genspider quotes_spider quotes.toscrape.com
+```
+
 #### settings.pyの設定
 
 ### HTML構造の調査と設計
