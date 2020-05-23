@@ -24,7 +24,7 @@ $ scrapy -V
 Scrapy 2.0.1
 ```
 
-Scrapyのプロジェクトファイルは、下記のコマンドで生成できます。ここでは、"sample\_pj"という名前のプロジェクトフォルダを作成しています。 
+Scrapyのプロジェクトファイルは、`scrapy startproject`コマンドで生成できます。ここでは、「sample\_pj」という名前のプロジェクトフォルダを作成しています。 
 
 ```text
 $ scrapy startproject sample_pj
@@ -36,7 +36,7 @@ You can start your first spider with:
     scrapy genspider example example.com
 ```
 
-scrapy genspiderコマンドでクローラーの名前とスクレイピングしたいページのURLを指定します。指示にしたがって、scrapy genspiderコマンドでクローラーの名前"sample"と対象のサイトのURLとして"example.com"を指定します。
+`scrapy genspider`コマンドでクローラーの名前とスクレイピングしたいページのURLを指定します。指示にしたがって、`scrapy genspider`コマンドでクローラーの名前「sample」と対象のサイトのURLとして「example.com」を指定します。
 
 ```text
 $ cd sample_pj

@@ -180,6 +180,48 @@ class QuotesSpiderSpider(Spider):
 $ scrapy crawl quotes_spider -o result.json
 ```
 
+アウトレットされたJSONを確認してみます。プロジェクト内に書き出されているはずです。
+
+![result.json](.gitbook/assets/sukurnshotto-2020-05-24-02247png.png)
+
+結果を確認すると、どうやら期待通りに動いてくれているようです。`jq`コマンドはJSONを整形して表示してくれるものです。
+
+```text
+# brew install jq
+$ cat result.json | jq | head -n 30
+[
+  {
+    "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+    "author": "Albert Einstein",
+    "tags": [
+      "change",
+      "deep-thoughts",
+      "thinking",
+      "world"
+    ]
+  },
+  {
+    "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+    "author": "J.K. Rowling",
+    "tags": [
+      "abilities",
+      "choices"
+    ]
+  },
+  {
+    "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+    "author": "Albert Einstein",
+    "tags": [
+      "inspirational",
+      "life",
+      "live",
+      "miracle",
+      "miracles"
+    ]
+  },
+
+```
+
 ### ログ情報
 
 `scrapy crawl`コマンドでクローラーを実行すると大量のログが出力されますが、これがどのようなログなのか、まとめていきます。ある程度のブロックごとに小分けして内容をまとめます。
@@ -286,56 +328,5 @@ scrapy crawl quotes_spider -o result.json
  'scheduler/enqueued/memory': 10,
  'start_time': datetime.datetime(2020, 5, 23, 15, 15, 32, 824889)}
 2020-05-24 00:16:09 [scrapy.core.engine] INFO: Spider closed (finished)
-```
-
-アウトレットされたJSONを確認してみます。期待通りに動いてくれています。
-
-```text
-$ brew install jq
-$ cat result.json | jq | head -n 10
-[
-  {
-    "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
-    "author": "Albert Einstein",
-    "tags": [
-      "change",
-      "deep-thoughts",
-      "thinking",
-      "world"
-    ]
-parse error: Unfinished JSON term at EOF at line 257, column 1
-~/Documents/scrapy/sample_quotes 
-➜ cat result.json | jq | head -n 30
-[
-  {
-    "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
-    "author": "Albert Einstein",
-    "tags": [
-      "change",
-      "deep-thoughts",
-      "thinking",
-      "world"
-    ]
-  },
-  {
-    "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
-    "author": "J.K. Rowling",
-    "tags": [
-      "abilities",
-      "choices"
-    ]
-  },
-  {
-    "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
-    "author": "Albert Einstein",
-    "tags": [
-      "inspirational",
-      "life",
-      "live",
-      "miracle",
-      "miracles"
-    ]
-  },
-
 ```
 
