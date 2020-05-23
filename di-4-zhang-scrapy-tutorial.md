@@ -180,22 +180,6 @@ class QuotesSpiderSpider(Spider):
 $ scrapy crawl quotes_spider -o result.json
 ```
 
-アウトレットされたJSONを確認してみます。期待通りに動いてくれています。
-
-```text
-$ cat result.json | head -n 10
-[
-{"text": "\u201cThe world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\u201d", "author": "Albert Einstein", "tags": ["change", "deep-thoughts", "thinking", "world"]},
-{"text": "\u201cIt is our choices, Harry, that show what we truly are, far more than our abilities.\u201d", "author": "J.K. Rowling", "tags": ["abilities", "choices"]},
-{"text": "\u201cThere are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.\u201d", "author": "Albert Einstein", "tags": ["inspirational", "life", "live", "miracle", "miracles"]},
-{"text": "\u201cThe person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.\u201d", "author": "Jane Austen", "tags": ["aliteracy", "books", "classic", "humor"]},
-{"text": "\u201cImperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.\u201d", "author": "Marilyn Monroe", "tags": ["be-yourself", "inspirational"]},
-{"text": "\u201cTry not to become a man of success. Rather become a man of value.\u201d", "author": "Albert Einstein", "tags": ["adulthood", "success", "value"]},
-{"text": "\u201cIt is better to be hated for what you are than to be loved for what you are not.\u201d", "author": "Andr\u00e9 Gide", "tags": ["life", "love"]},
-{"text": "\u201cI have not failed. I've just found 10,000 ways that won't work.\u201d", "author": "Thomas A. Edison", "tags": ["edison", "failure", "inspirational", "paraphrased"]},
-{"text": "\u201cA woman is like a tea bag; you never know how strong it is until it's in hot water.\u201d", "author": "Eleanor Roosevelt", "tags": ["misattributed-eleanor-roosevelt"]},
-```
-
 ### ログ情報
 
 `scrapy crawl`コマンドでクローラーを実行すると大量のログが出力されますが、これがどのようなログなのか、まとめていきます。ある程度のブロックごとに小分けして内容をまとめます。
@@ -304,5 +288,54 @@ scrapy crawl quotes_spider -o result.json
 2020-05-24 00:16:09 [scrapy.core.engine] INFO: Spider closed (finished)
 ```
 
+アウトレットされたJSONを確認してみます。期待通りに動いてくれています。
 
+```text
+$ brew install jq
+$ cat result.json | jq | head -n 10
+[
+  {
+    "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+    "author": "Albert Einstein",
+    "tags": [
+      "change",
+      "deep-thoughts",
+      "thinking",
+      "world"
+    ]
+parse error: Unfinished JSON term at EOF at line 257, column 1
+~/Documents/scrapy/sample_quotes 
+➜ cat result.json | jq | head -n 30
+[
+  {
+    "text": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+    "author": "Albert Einstein",
+    "tags": [
+      "change",
+      "deep-thoughts",
+      "thinking",
+      "world"
+    ]
+  },
+  {
+    "text": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+    "author": "J.K. Rowling",
+    "tags": [
+      "abilities",
+      "choices"
+    ]
+  },
+  {
+    "text": "“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”",
+    "author": "Albert Einstein",
+    "tags": [
+      "inspirational",
+      "life",
+      "live",
+      "miracle",
+      "miracles"
+    ]
+  },
+
+```
 
