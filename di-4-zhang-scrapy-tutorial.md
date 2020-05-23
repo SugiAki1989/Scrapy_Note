@@ -204,11 +204,14 @@ $ cat result.json | head -n 10
 
 ```text
 $ scrapy crawl quotes_spider -o result.json
-2020-05-23 22:42:28 [scrapy.utils.log] INFO: Scrapy 2.0.1 started (bot: sample_quotes)
-2020-05-23 22:42:28 [scrapy.utils.log] INFO: Versions: lxml 4.5.0.0, libxml2 2.9.10, cssselect 1.1.0, parsel 1.5.2, w3lib 1.21.0, Twisted 20.3.0, Python 3.8.2 (v3.8.2:7b3ab5921f, Feb 24 2020, 17:52:18) - [Clang 6.0 (clang-600.0.57)], pyOpenSSL 19.1.0 (OpenSSL 1.1.1g  21 Apr 2020), cryptography 2.9.1, Platform macOS-10.15.4-x86_64-i386-64bit
-2020-05-23 22:42:28 [scrapy.utils.log] DEBUG: Using reactor: twisted.internet.selectreactor.SelectReactor
-2020-05-23 22:42:28 [scrapy.crawler] INFO: Overridden settings:
+scrapy crawl quotes_spider -o result.json
+2020-05-24 00:15:32 [scrapy.utils.log] INFO: Scrapy 2.0.1 started (bot: sample_quotes)
+2020-05-24 00:15:32 [scrapy.utils.log] INFO: Versions: lxml 4.5.0.0, libxml2 2.9.10, cssselect 1.1.0, parsel 1.5.2, w3lib 1.21.0, Twisted 20.3.0, Python 3.8.2 (v3.8.2:7b3ab5921f, Feb 24 2020, 17:52:18) - [Clang 6.0 (clang-600.0.57)], pyOpenSSL 19.1.0 (OpenSSL 1.1.1g  21 Apr 2020), cryptography 2.9.1, Platform macOS-10.15.4-x86_64-i386-64bit
+2020-05-24 00:15:32 [scrapy.utils.log] DEBUG: Using reactor: twisted.internet.selectreactor.SelectReactor
+2020-05-24 00:15:32 [scrapy.crawler] INFO: Overridden settings:
 {'BOT_NAME': 'sample_quotes',
+ 'CONCURRENT_REQUESTS': 1,
+ 'DOWNLOAD_DELAY': 3,
  'FEED_FORMAT': 'json',
  'FEED_URI': 'result.json',
  'NEWSPIDER_MODULE': 'sample_quotes.spiders',
@@ -219,14 +222,14 @@ $ scrapy crawl quotes_spider -o result.json
 ここらへんの行は、middlewareの設定が書いてあります。さきほどの部分でROBOTSTXT\_OBEYがTrueになっていましたが、このmiddlewareの中で、RobotsTxtMiddleware\(9行目\)が有効になっていることもわかります。どのタイミングでMidllewareによってパイプラインが拡張されるのかは、ScrapyのアーキテクチャのMiddlewareの部分を見ればわかると思います。
 
 ```text
-2020-05-23 22:42:28 [scrapy.extensions.telnet] INFO: Telnet Password: ceeba081f7327fad
-2020-05-23 22:42:28 [scrapy.middleware] INFO: Enabled extensions:
+2020-05-24 00:15:32 [scrapy.extensions.telnet] INFO: Telnet Password: 1a8dbcb6e9a6c554
+2020-05-24 00:15:32 [scrapy.middleware] INFO: Enabled extensions:
 ['scrapy.extensions.corestats.CoreStats',
  'scrapy.extensions.telnet.TelnetConsole',
  'scrapy.extensions.memusage.MemoryUsage',
  'scrapy.extensions.feedexport.FeedExporter',
  'scrapy.extensions.logstats.LogStats']
-2020-05-23 22:42:28 [scrapy.middleware] INFO: Enabled downloader middlewares:
+2020-05-24 00:15:32 [scrapy.middleware] INFO: Enabled downloader middlewares:
 ['scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware',
  'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware',
  'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware',
@@ -239,30 +242,67 @@ $ scrapy crawl quotes_spider -o result.json
  'scrapy.downloadermiddlewares.cookies.CookiesMiddleware',
  'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware',
  'scrapy.downloadermiddlewares.stats.DownloaderStats']
-2020-05-23 22:42:28 [scrapy.middleware] INFO: Enabled spider middlewares:
+2020-05-24 00:15:32 [scrapy.middleware] INFO: Enabled spider middlewares:
 ['scrapy.spidermiddlewares.httperror.HttpErrorMiddleware',
  'scrapy.spidermiddlewares.offsite.OffsiteMiddleware',
  'scrapy.spidermiddlewares.referer.RefererMiddleware',
  'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware',
  'scrapy.spidermiddlewares.depth.DepthMiddleware']
-2020-05-23 22:42:28 [scrapy.middleware] INFO: Enabled item pipelines:
+2020-05-24 00:15:32 [scrapy.middleware] INFO: Enabled item pipelines:
 []
 ```
 
-続きを進めていきます。
+続きを進めていきます。4行目でrobotx.txtのページにリクエストを送っています。6行目を見るとスクレイピングが開始され、7行目からその結果が出力されています。
 
 ```text
-2020-05-23 22:42:28 [scrapy.core.engine] INFO: Spider opened
-2020-05-23 22:42:28 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
-2020-05-23 22:42:28 [scrapy.extensions.telnet] INFO: Telnet console listening on 127.0.0.1:6024
-2020-05-23 22:42:29 [scrapy.core.engine] DEBUG: Crawled (404) <GET http://quotes.toscrape.com/robots.txt> (referer: None)
-2020-05-23 22:42:30 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://quotes.toscrape.com/> (referer: None)
-2020-05-23 22:42:30 [scrapy.core.scraper] DEBUG: Scraped from <200 http://quotes.toscrape.com/>
+2020-05-24 00:15:32 [scrapy.core.engine] INFO: Spider opened
+2020-05-24 00:15:32 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)
+2020-05-24 00:15:32 [scrapy.extensions.telnet] INFO: Telnet console listening on 127.0.0.1:6024
+2020-05-24 00:15:33 [scrapy.core.engine] DEBUG: Crawled (404) <GET http://quotes.toscrape.com/robots.txt> (referer: None)
+2020-05-24 00:15:36 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://quotes.toscrape.com/> (referer: None)
+2020-05-24 00:15:37 [scrapy.core.scraper] DEBUG: Scraped from <200 http://quotes.toscrape.com/>
 {'text': '“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”', 'author': 'Albert Einstein', 'tags': ['change', 'deep-thoughts', 'thinking', 'world']}
-
 ```
 
+100個目のスクレイピングが終わったところから、ログを眺めていきます。「'downloader/request\_count': 11」「'downloader/request\_method\_count/GET': 11」なのはrobot.txtが1ページと名言が10ページの合計11ページにリクエスト\(GET\)したということです。
 
+「'downloader/response\_status\_count/200':10」「'downloader/response\_status\_count/404': 1」なのはrobot.txtが1ページが404で名言の10ページは200で正常に返ってきたからですね。
+
+終了時刻の後にある「'item\_scraped\_count': 100」は100個のアイテムをスクレイピングしたことを意味します。その他のログは書いてあるとおりです。
+
+```text
+2020-05-24 00:16:09 [scrapy.dupefilters] DEBUG: Filtered duplicate request: <GET http://quotes.toscrape.com/page/10/> - no more duplicates will be shown (see DUPEFILTER_DEBUG to show all duplicates)
+2020-05-24 00:16:09 [scrapy.core.engine] INFO: Closing spider (finished)
+2020-05-24 00:16:09 [scrapy.extensions.feedexport] INFO: Stored json feed (100 items) in: result.json
+2020-05-24 00:16:09 [scrapy.statscollectors] INFO: Dumping Scrapy stats:
+{'downloader/request_bytes': 2881,
+ 'downloader/request_count': 11,
+ 'downloader/request_method_count/GET': 11,
+ 'downloader/response_bytes': 24911,
+ 'downloader/response_count': 11,
+ 'downloader/response_status_count/200': 10,
+ 'downloader/response_status_count/404': 1,
+ 'dupefilter/filtered': 1,
+ 'elapsed_time_seconds': 36.456222,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2020, 5, 23, 15, 16, 9, 281111),
+ 'item_scraped_count': 100,
+ 'log_count/DEBUG': 112,
+ 'log_count/INFO': 11,
+ 'memusage/max': 49393664,
+ 'memusage/startup': 49393664,
+ 'request_depth_max': 10,
+ 'response_received_count': 11,
+ 'robotstxt/request_count': 1,
+ 'robotstxt/response_count': 1,
+ 'robotstxt/response_status_count/404': 1,
+ 'scheduler/dequeued': 10,
+ 'scheduler/dequeued/memory': 10,
+ 'scheduler/enqueued': 10,
+ 'scheduler/enqueued/memory': 10,
+ 'start_time': datetime.datetime(2020, 5, 23, 15, 15, 32, 824889)}
+2020-05-24 00:16:09 [scrapy.core.engine] INFO: Spider closed (finished)
+```
 
 
 
