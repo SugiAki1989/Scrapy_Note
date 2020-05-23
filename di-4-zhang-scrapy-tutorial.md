@@ -194,10 +194,29 @@ $ cat result.json | head -n 10
 {"text": "\u201cIt is better to be hated for what you are than to be loved for what you are not.\u201d", "author": "Andr\u00e9 Gide", "tags": ["life", "love"]},
 {"text": "\u201cI have not failed. I've just found 10,000 ways that won't work.\u201d", "author": "Thomas A. Edison", "tags": ["edison", "failure", "inspirational", "paraphrased"]},
 {"text": "\u201cA woman is like a tea bag; you never know how strong it is until it's in hot water.\u201d", "author": "Eleanor Roosevelt", "tags": ["misattributed-eleanor-roosevelt"]},
-
 ```
 
 ### ログ情報
+
+`scrapy crawl`コマンドでクローラーを実行すると大量のログが出力されますが、これがどのようなログなのか、まとめていきます。ある程度のブロックごとに小分けして内容をまとめます。
+
+まずは
+
+```text
+$ scrapy crawl quotes_spider -o result.json
+2020-05-23 22:42:28 [scrapy.utils.log] INFO: Scrapy 2.0.1 started (bot: sample_quotes)
+2020-05-23 22:42:28 [scrapy.utils.log] INFO: Versions: lxml 4.5.0.0, libxml2 2.9.10, cssselect 1.1.0, parsel 1.5.2, w3lib 1.21.0, Twisted 20.3.0, Python 3.8.2 (v3.8.2:7b3ab5921f, Feb 24 2020, 17:52:18) - [Clang 6.0 (clang-600.0.57)], pyOpenSSL 19.1.0 (OpenSSL 1.1.1g  21 Apr 2020), cryptography 2.9.1, Platform macOS-10.15.4-x86_64-i386-64bit
+2020-05-23 22:42:28 [scrapy.utils.log] DEBUG: Using reactor: twisted.internet.selectreactor.SelectReactor
+2020-05-23 22:42:28 [scrapy.crawler] INFO: Overridden settings:
+{'BOT_NAME': 'sample_quotes',
+ 'FEED_FORMAT': 'json',
+ 'FEED_URI': 'result.json',
+ 'NEWSPIDER_MODULE': 'sample_quotes.spiders',
+ 'ROBOTSTXT_OBEY': True,
+ 'SPIDER_MODULES': ['sample_quotes.spiders']}
+```
+
+
 
 
 
