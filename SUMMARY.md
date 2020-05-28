@@ -8,5 +8,5 @@
 * [第5章　Scrapy ShellとXpath](chapter05_xpath.md)
 * [第6章　Scrapy Tutorial2](chapter06_tutorial02.md)
 * [第7章　ScrapyとMySQL](chapter07_mysql.md)
-* [第8章　スクレイピングのアラカルト](8sukureipinguno.md)
+* [第8章　スクレイピングのアラカルト](chapter08_alacarte.md)
 
