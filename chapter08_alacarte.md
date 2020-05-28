@@ -255,5 +255,5 @@ HTTPヘッダーは大きく4つのブロックで構成されます。「一般
 | Content-Length |  |
 | Content-Type |  |
 | Expired |  |
-| Last-Modified |  |
+| Last-Modified | a |
 
