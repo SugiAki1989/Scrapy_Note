@@ -137,6 +137,5 @@ $ curl --verbose http://example.com
 > Host: example.com
 > User-Agent: curl/7.64.1
 > Accept: */*
-> 
 ```
 
