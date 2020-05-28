@@ -127,7 +127,7 @@ $ curl --verbose http://example.com
 * Closing connection 0
 ```
 
-まずはリクエストの部分です。example.comに80番ポートから、GETというリクエストメソッドで接続を試みていることがわかります。HTTP1.1というのはHTTPのバージョンです。User-Agentというのは後で詳しく扱いますが、誰がしているのかを示します。ここでは、`curl`コマンドでおこなっていることがわかります。
+まずはリクエストの部分です。example.comに80番ポートから、GETというリクエストメソッドで接続を試みていることがわかります。HTTP1.1というのはHTTPのバージョンです。User-Agentというのは後で詳しく扱いますが、誰がしているのかを示します。ここでは、`curl`コマンドで行っていることがわかります。
 
 ```http
 *   Trying 93.184.216.34...
@@ -138,4 +138,18 @@ $ curl --verbose http://example.com
 > User-Agent: curl/7.64.1
 > Accept: */*
 ```
+
+リクエストメソッドはGET以外にもよく使われるものとしてPOST、PUTなどがあります。
+
+| リクエストメソッド | 内容 |
+| :--- | :--- |
+| GET | aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
+| HEAD |  |
+| POST |  |
+| PUT |  |
+| DELETE |  |
+| OPTIONS |  |
+| TRACE |  |
+| PATCH |  |
+| CONNECT |  |
 
