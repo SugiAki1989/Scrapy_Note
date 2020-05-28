@@ -93,7 +93,7 @@ QuotesSpiderは、allowed\_domainsで許可されたドメイン内において�
 
 このように、クローラーのスタート地点を決め、どのような情報を取得し、どのようにクローラーを動かすのかをSpiderに記述します。下記はサンプルです。
 
-```text
+```python
 import scrapy
 
 
@@ -158,7 +158,7 @@ Scrapyでクローラーを作る時は、Scarpy Shellで抽出するデータ�
 
 特定の条件い当てはまるものを削除するアイテム・パイプラインは下記のように記述します。
 
-```text
+```python
 from scrapy.exceptions import DropItem
 
 class PricePipeline(object):
@@ -176,7 +176,7 @@ class PricePipeline(object):
 
 そして、アイテム・パイプライン・コンポーネントをアクティブにするために、settings.pyに書きを追加します。300というのは実行の順序を決める整数で0~1000まで自由に設定できますが、これ以外の処理もあるのであれば、それを考慮して順序関係を決定します。
 
-```text
+```python
 ITEM_PIPELINES = {
     'myproject.pipelines.PricePipeline': 300
 }

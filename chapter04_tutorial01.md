@@ -100,7 +100,7 @@ Out[8]: ['change', 'deep-thoughts', 'thinking', 'world']
 
 これでスクレイピングしたい情報のコードが書けました。これをブロックごとに繰り返したいので、下記のように`for-loop`で書き直し、取得した値は`yield`で出力します。
 
-```text
+```python
 quotes = response.xpath('//*[@class="quote"]')
 
 for quote in quotes:
@@ -126,7 +126,7 @@ Out[9]: '/page/2/'
 
 URLがあるかどうかで判定するのはこれで良いのですが、クローラーがこの相対パスのURLでは移動できません。なので、完全パスにURLを`urljoin`で修正します。
 
-```text
+```python
 next_page_url = response.xpath('//*[@class="next"]/a/@href').get()
 abs_next_page_url = response.urljoin(next_page_url)
 if abs_next_page_url is not None:
@@ -135,7 +135,7 @@ if abs_next_page_url is not None:
 
 これで10ページ文の名言100個をスクレイピングする準備ができました。これを実行していきます。ページの移動のさせ方は下記のようにページ番号をインクリメントするように書いても問題ないです。
 
-```text
+```python
 class QuotesSpiderSpider(Spider):
     name = 'quotes_spider'
     allowed_domains = ['quotes.toscrape.com']
@@ -156,7 +156,7 @@ class QuotesSpiderSpider(Spider):
 
 ここまでのコードを「spiders/quotes\_spider.py」に書き込むと下記のようになります。
 
-```text
+```python
 # -*- coding: utf-8 -*-
 from scrapy import Spider
 from scrapy import Request
