@@ -141,15 +141,15 @@ $ curl --verbose http://example.com
 
 リクエストメソッドはGET以外にもよく使われるものとしてPOST、PUTなどがあります。
 
-| リクエストメソッド | 内容 |
+| メソッド | 内容 |
 | :--- | :--- |
-| GET | aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
-| HEAD |  |
-| POST |  |
-| PUT |  |
-| DELETE |  |
-| OPTIONS |  |
-| TRACE |  |
-| PATCH |  |
-| CONNECT |  |
+| GET | 指定したURLのリソースをリクエスト。  |
+| HEAD | GETリクエストと同じレスポンスを求めますが、レスポンス本文はなく、ヘッダのみ。 |
+| POST | 指定したリソースに情報を送信するためのメソッド。 |
+| PUT | 指定したURLにリソースを保存。 |
+| DELETE | 指定したURLのリソースを削除。 |
+| OPTIONS | 指定したURLの通信オプションを示すために使用。 |
+| TRACE | サーバまでのネットワーク経路をチェック。 |
+| PATCH | リソースを部分的に変更。 |
+| CONNECT | サーバーとの間にトンネルを確立。 |
 
