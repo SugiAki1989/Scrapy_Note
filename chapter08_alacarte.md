@@ -226,34 +226,34 @@ HTTPヘッダーは大きく4つのブロックで構成されます。「一般
 
 | 項目 | 内容 |
 | :--- | :--- |
-|  |  |
-|  |  |
-|  |  |
+| Connection |  |
+| Date |  |
+| Upgrade |  |
 
 次は、リクエストヘッダーです。
 
 | 項目 | 内容 |
 | :--- | :--- |
-|  |  |
-|  |  |
-|  |  |
+| Host |  |
+| Referer |  |
+| User-Agent |  |
 
 レスポンスヘッダーは下記のとおりです。
 
 | 項目 | 内容 |
 | :--- | :--- |
-|  |  |
-|  |  |
+| Location |  |
+| Server |  |
 
 最後にエンティティヘッダーです。
 
 | 項目 | 内容 |
 | :--- | :--- |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
+| Allow |  |
+| Content-Encoding |  |
+| Content-Language |  |
+| Content-Length |  |
+| Content-Type |  |
+| Expired |  |
+| Last-Modified |  |
 
