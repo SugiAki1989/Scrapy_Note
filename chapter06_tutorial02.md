@@ -78,7 +78,7 @@ Out[14]:
 
 では、各書籍のURLを使ってリクエストを送れるようにコードを書いていきます。
 
-```python
+```text
 books = response.xpath('//h3/a/@href').getall()
 for book in books:
      abs_url = response.urljoin(book)
@@ -94,7 +94,7 @@ Out[15]: 'catalogue/page-2.html'
 
 これで次のページへのURLがとれるので、正規化してリクエストを送れるようにします。
 
-```python
+```text
 next_page_url = response.xpath('//a[text()="next"]/@href').get()
 abs_next_page_url = response.urljoin(next_page_url)
 if abs_next_page_url is not None:
@@ -103,7 +103,7 @@ if abs_next_page_url is not None:
 
 これまでの部分をまとめると、このような`parse`関数ができているはずです。
 
-```python
+```text
 def parse(self, response):
     books = response.xpath('//h3/a/@href').getall()
     for book in books:
@@ -119,7 +119,7 @@ def parse(self, response):
 
 次は詳細ページです。これも第5章で取得してるのでそれを参考に書きます。ここまで書くと、「spiders/books\_spider.py」は、このようになっているはずです。
 
-```python
+```text
 # -*- coding: utf-8 -*-
 from scrapy import Spider
 from scrapy.http import Request

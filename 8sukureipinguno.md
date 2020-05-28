@@ -127,7 +127,7 @@ $ curl --verbose http://example.com
 * Closing connection 0
 ```
 
-まずはリクエストの部分です。
+まずはリクエストの部分です。example.comに80番ポートから、GETというリクエストメソッドで接続を試みていることがわかります。HTTP1.1というのはHTTPのバージョンです。User-Agentというのは後で詳しく扱いますが、誰がしているのかを示します。ここでは、`curl`コマンドでおこなっていることがわかります。
 
 ```http
 *   Trying 93.184.216.34...
