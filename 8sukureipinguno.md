@@ -8,7 +8,7 @@
 
 HTTPは、WebブラウザがWebサーバーと通信するためのプロトコルです。HTTPは、TCP/IPにおけるアプリケーションがやり取りを行う層のプロトコルで、トランスポート層の中に位置します。TCP/IPのことよりも、HTTPについて理解を深めることが、スクレイピングには大切かと思いますので、これ以降はHTTPについてまとめていきます。
 
-まずはWebブラウザからです。Webブラウザといえば、Google chrome、Internet Explorer、Firefoxなどが有名なWebブラウザとしてあげられますが、これ何でしょうか。そもそもWebとは、World Wide Webを略して表現したもので、そのWebの中に、Webページがあります。WebページははHTML\(HyperText Markup Language\)という言語で構成されています。そのWebページを閲覧するために使うのものがブラウザです。
+いつも何のことなく使っているWebブラウザからです。Webブラウザといえば、Google chrome、Internet Explorer、Firefoxなどが有名なWebブラウザとしてあげられますが、これ何でしょうか。そもそもWebとは、World Wide Webを略して表現したもので、そのWebの中に、Webページがあります。WebページははHTML\(HyperText Markup Language\)という言語で構成されています。そのWebページを閲覧するために使うのものがブラウザです。
 
 [WikipediaのHTMLサンプル](https://ja.wikipedia.org/wiki/HyperText_Markup_Language)をお借りします。`<xxx>hoge</xxx>`という方法でテキストをマークアップしていくことでHTMLは構成されます。そのため、HTMLというのは、マークアップ言語とも呼ばれます。マークアップ言語は、人間が見やすいものではありません。
 
@@ -127,7 +127,11 @@ $ curl --verbose http://example.com
 * Closing connection 0
 ```
 
-まずはリクエストの部分です。example.comに80番ポートから、GETというリクエストメソッドで接続を試みていることがわかります。HTTP1.1というのはHTTPのバージョンです。User-Agentというのは後で詳しく扱いますが、誰がしているのかを示します。ここでは、`curl`コマンドで行っていることがわかります。
+### HTTPリクエスト
+
+まずはリクエストの部分です。4行目が「リクエスト行」で、5~7行目は「HTTPヘッダー」、8行目は「空白行」でヘッダーの終わりを意味し、POSTであれば、その下にwebサーバーにデータを送るための「メッセージボディ」が配置されます。
+
+example.comに80番ポートから、GETというリクエストメソッドで接続を試みていることがわかります。HTTP1.1というのはHTTPのバージョンです。User-Agentというのは後で詳しく扱いますが、誰がしているのかを示します。ここでは、`curl`コマンドで行っていることがわかります。
 
 ```http
 *   Trying 93.184.216.34...
@@ -137,9 +141,10 @@ $ curl --verbose http://example.com
 > Host: example.com
 > User-Agent: curl/7.64.1
 > Accept: */*
+>
 ```
 
-リクエストメソッドはGET以外にもよく使われるものとしてPOST、PUTなどがあります。
+リクエストメソッドはGET以外にもよく使われるものとしてPOST、PUTなどがあります。コンテンツを取得する際に利用するものとして、GETとPOSTがありますが、GETはURLの後ろに情報を加える一方で、POSTはメッセージボディに情報を加えて通信します。基本的に見られて困る情報はPOSTで送ります。
 
 | メソッド | 内容 |
 | :--- | :--- |
@@ -151,5 +156,46 @@ $ curl --verbose http://example.com
 | OPTIONS | 指定したURLの通信オプションを示すために使用。 |
 | TRACE | サーバまでのネットワーク経路をチェック。 |
 | PATCH | リソースを部分的に変更。 |
-| CONNECT | サーバーとの間にトンネルを確立。 |
+| CONNECT | TCPトンネルを接続する。暗号化したメッセージをプロキシサーバを経由して転送する際に用いる。 |
+
+リクエストメソッドのPOST\(Create\)、GET\(Read\)、PUT\(Update\)、DELETE\(Delete\)の操作をまとめてCRUD操作として考えることをRESTアーキテクチャと呼びます。
+
+### HTTPレスポンス
+
+次はHTTPレスポンスの中身を見ていきます。1行目が「ステータス行」で、2〜12行目が「HTTPヘッダー」で、13行目が「空白行」でヘッダーの終わりを示す。14行目が「メッセージボディ」でHTMLが返されます。
+
+ステータスコードが200で成功したことを意味し、コンテンツの内容はHTMLで、キャラセットはutf8ということがわかります。日付、キャッシュ、コンテンツの長さなどが書かれています。
+
+```http
+< HTTP/1.1 200 OK
+< Age: 532987
+< Cache-Control: max-age=604800
+< Content-Type: text/html; charset=UTF-8
+< Date: Thu, 28 May 2020 08:36:36 GMT
+< Etag: "3147526947+ident"
+< Expires: Thu, 04 Jun 2020 08:36:36 GMT
+< Last-Modified: Thu, 17 Oct 2019 07:18:26 GMT
+< Server: ECS (oxr/832B)
+< Vary: Accept-Encoding
+< X-Cache: HIT
+< Content-Length: 1256
+< 
+<!doctype html>
+<html>
+<head>
+【略】
+</head>
+
+<body>
+<div>
+    <h1>Example Domain</h1>
+    <p>This domain is for use in illustrative examples in documents. You may use this
+    domain in literature without prior coordination or asking for permission.</p>
+    <p><a href="https://www.iana.org/domains/example">More information...</a></p>
+</div>
+</body>
+</html>
+* Connection #0 to host example.com left intact
+* Closing connection 0
+```
 
