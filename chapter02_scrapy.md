@@ -290,7 +290,9 @@ Downloader Middlewareは下記の通りデフォルトで設定されていま�
       style="text-align:left">900</td>
     </tr>
   </tbody>
-</table>DownloaderMiddlewareの処理はHTTPリクエストを送る前に順番が小さいものから順番に実行され、それが完了するとダウンロードが始まります。
+</table>
+
+DownloaderMiddlewareの処理はHTTPリクエストを送る前に順番が小さいものから順番に実行され、それが完了するとダウンロードが始まります。
 
 SpiderMiddlewareは、コールバック関数の処理を拡張できます。下記がデフォルトで設定されているSpiderMiddlewareです。
 

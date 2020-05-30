@@ -218,7 +218,7 @@ Twitterの503はよく目にするけど、それを通知する画像がかわ�
 
 ### HTTPヘッダー
 
-HTTPリクエスト、HTTPレスポンスのいずれもHTTPヘッダーを持ちます。ここには、詳細な情報をもたせることが可能です。1行の情報を「ヘッダーフィールド」と呼び、フィールド名とフィールド値で構成されます。
+HTTPリクエスト、HTTPレスポンスのいずれもHTTPヘッダーを持ちます。ここには、詳細な情報をもたせることが可能です。1行の情報を「ヘッダーフィールド」と呼び、「フィールド名」と「フィールド値」で構成されます。
 
 HTTPヘッダーは大きく4つのブロックで構成されます。「一般ヘッダー」「リクエストヘッダー」「レスポンスヘッダー」「エンティティヘッダー」です。
 
@@ -226,34 +226,34 @@ HTTPヘッダーは大きく4つのブロックで構成されます。「一般
 
 | 項目 | 内容 |
 | :--- | :--- |
-| Connection |  |
-| Date |  |
-| Upgrade |  |
+| Connection | リクエスト後のTCPコネクションの接続状態に関する通知 |
+| Date | HTTPメッセージが作成された日 |
+| Upgrade | HTTPのバージョンをアップデートするように通知 |
 
 次は、リクエストヘッダーです。
 
 | 項目 | 内容 |
 | :--- | :--- |
-| Host |  |
-| Referer |  |
-| User-Agent |  |
+| Host | リクエスト先のサーバー |
+| Referer | 直前にリンクしていたURL |
+| User-Agent | Webブラウザの情報 |
 
 レスポンスヘッダーは下記のとおりです。
 
 | 項目 | 内容 |
 | :--- | :--- |
-| Location |  |
-| Server |  |
+| Location | リダイレクト先のWebページの情報 |
+| Server | Webサーバーの情報 |
 
 最後にエンティティヘッダーです。
 
 | 項目 | 内容 |
 | :--- | :--- |
-| Allow |  |
-| Content-Encoding |  |
-| Content-Language |  |
-| Content-Length |  |
-| Content-Type |  |
-| Expired |  |
-| Last-Modified | a |
+| Allow | 利用可能なHTTPメソッドの情報 |
+| Content-Encoding | コンテンツのエンコード方式 |
+| Content-Language | コンテンツの言語 |
+| Content-Length | コンテンツのサイズ |
+| Content-Type | コンテンツの種類 |
+| Expired | コンテンツの有効期限 |
+| Last-Modified | コンテンツの最終更新時刻 |
 
