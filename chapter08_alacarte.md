@@ -240,14 +240,24 @@ HTTPヘッダーは大きく4つのブロックで構成されます。「一般
 | Connection | リクエスト後のTCPコネクションの接続状態に関する通知 |
 | Date | HTTPメッセージが作成された日 |
 | Upgrade | HTTPのバージョンをアップデートするように通知 |
+| Cashe - Control | キャッシュの動作を指定 |
+| Pragma | データのキャッシュなどの追加情報 |
+| Transfer - Encoding | ボディで送るデータのエンコード方式 |
 
 次は、リクエストヘッダーです。
 
 | 項目 | 内容 |
 | :--- | :--- |
+| Accept | クライアントの受け入れ可能なコンテンツ |
+| Accept - Charset | クライアントの受け入れ可能な文字セット |
+| Accept - Encoding | クライアントの受け入れ可能な文字エンコード |
+| Accept - Language | クライアントの受け入れ可能な言語 |
+| Cookie | Cookieをサーバーに送信する |
+| From | リクエスト者のメールアドレス |
 | Host | リクエスト先のサーバー |
 | Referer | 直前にリンクしていたURL |
 | User-Agent | Webブラウザの情報 |
+| Proxy - Authorization | プロキシに対する認証情報 |
 
 レスポンスヘッダーは下記のとおりです。
 
