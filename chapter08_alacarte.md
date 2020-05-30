@@ -256,7 +256,7 @@ HTTPヘッダーは大きく4つのブロックで構成されます。「一般
 | From | リクエスト者のメールアドレス |
 | Host | リクエスト先のサーバー |
 | Referer | 直前にリンクしていたURL |
-| User-Agent | Webブラウザの情報 |
+| User - Agent | Webブラウザの情報 |
 | Proxy - Authorization | プロキシに対する認証情報 |
 
 レスポンスヘッダーは下記のとおりです。
@@ -282,6 +282,20 @@ HTTPヘッダーは大きく4つのブロックで構成されます。「一般
 | Content-Type | コンテンツの種類 |
 | Expired | コンテンツの有効期限 |
 | Last-Modified | コンテンツの最終更新時刻 |
+
+User-Agentについて、少し触れておきます。User-Agentはアクセスしているブラウザのバージョンや種類を示すもので、Scrapyでスクレイピングしている際に、同じUser-Agentだとアクセスできなくなることがります。そのような場合に、User-Agentを切り替える\(偽造\)してアクセスする必要があります。偽造という表現が良くないですが、問題のある行為ではありません。
+
+例えば、Google Chromeの場合、下記のようなUser-Agentになります。[What is my User Agent?](https://www.whatismybrowser.com/detect/what-is-my-user-agent)で調べることができます。ちなみにグローバルIPアドレスは[What is my ip?](https://whatismyipaddress.com/)で調べることができます。
+
+```http
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36
+```
+
+Safariなどは下記のようになります。
+
+```http
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Safari/605.1.15
+```
 
 ### HTTPコネクション
 
