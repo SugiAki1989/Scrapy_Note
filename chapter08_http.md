@@ -393,3 +393,11 @@ $ curl -u 'kaiin:naisho' http://leggiero.sakura.ne.jp/xxxxbasic_auth_testxxxx/se
 </html>~ 
 ```
 
+URLにIDとパスワードを付けてリクエストすることも可能です。
+
+```text
+$ curl http://id:pass@www.example.com/ 
+```
+
+他にもフォームベース認証というものがあります。これは、名前の通りで、ログインフォームからIDとパスを認証する方法です。
+
