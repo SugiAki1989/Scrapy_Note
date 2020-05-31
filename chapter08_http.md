@@ -365,7 +365,7 @@ MySQLなどのデータベースサーバーであれば、ポート番号は330
 
 Webページにアクセスすると、ポップアップと同時にアカウントとパスワードが求められる認証方式がHTTP認証です。HTTP認証の中でも広く使われる方法が、ベーシック認証です。ベーシック認証がかかっているURLにリクエストを送ると、401が返ってきます。
 
-![Basic&#x8A8D;&#x8A3C;](.gitbook/assets/sukurnshotto-2020-05-31-121100png.png)
+![Basic Configuration](.gitbook/assets/sukurnshotto-2020-05-31-121100png.png)
 
 ```text
 # -I:HTTPレスポンスヘッダーの取得
@@ -384,5 +384,69 @@ Content-Type: text/html; charset=UTF-8
 <p>Hello tabaka.</p><p>You entered awsedrft as your password.</p>~ 
 ```
 
-他にもフォームベース認証というものがあります。これは、名前の通りで、ログインフォームからIDとパスを認証する方法です。
+他にもフォームベース認証というものがあります。これは、名前の通りで、ログインフォームからIDとパスを認証する方法です。例えば、Githubはフォーム認証です。
+
+![Form Configuration](.gitbook/assets/sukurnshotto-2020-05-31-121156png.png)
+
+フォームに該当する部分のHTMLを抜き出すと、このようになっています。1行目のform要素のaction属性、method属性を確認すると、`method="post"`で`/session`というパスに情報を送ることがわかります。
+
+```markup
+<form action="/session" accept-charset="UTF-8" method="post"><input type="hidden" data-csrf="true" name="authenticity_token" value="****************==" />      <input type="hidden" name="ga_id" class="js-octo-ga-id-input">
+      <div class="auth-form-header p-0">
+        <h1>Sign in to GitHub</h1>
+      </div>
+
+
+      <div id="js-flash-container">
+
+
+  <template class="js-flash-template">
+    <div class="flash flash-full  js-flash-template-container">
+  <div class="container-lg px-2" >
+    <button class="flash-close js-flash-close" type="button" aria-label="Dismiss this message">
+      <svg class="octicon octicon-x" viewBox="0 0 12 16" version="1.1" width="12" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48L7.48 8z"></path></svg>
+    </button>
+    
+      <div class="js-flash-template-message"></div>
+
+  </div>
+</div>
+  </template>
+</div>
+
+
+      <div class="flash js-transform-notice" hidden>
+        <button class="flash-close js-flash-close" type="button" aria-label="Dismiss this message">
+          <svg class="octicon octicon-x" viewBox="0 0 12 16" version="1.1" width="12" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48L7.48 8z"></path></svg>
+        </button>
+      </div>
+
+      <div class="auth-form-body mt-3">
+
+        <label for="login_field">
+          Username or email address
+        </label>
+        <input type="text" name="login" id="login_field" class="form-control input-block" tabindex="1" autocapitalize="off" autocorrect="off" autocomplete="username" autofocus="autofocus" />
+
+        <label for="password">
+          Password <a class="label-link" href="/password_reset">Forgot password?</a>
+        </label>
+        <input type="password" name="password" id="password" class="form-control form-control input-block" tabindex="2" autocomplete="current-password" />
+        <input type="hidden" class="js-webauthn-support" name="webauthn-support" value="unknown">
+        <input type="hidden" class="js-webauthn-iuvpaa-support" name="webauthn-iuvpaa-support" value="unknown">
+        <input type="hidden" name="return_to" id="return_to" class="form-control" />
+        <input class="form-control" type="text" name="required_field_2cad" hidden="hidden" />
+<input class="form-control" type="hidden" name="timestamp" value="1590894924840" />
+<input class="form-control" type="hidden" name="timestamp_secret" value="35403dd16a13de0a200b8bedb46b64b4309326083002f2b7b73c3f5bfd96ce33" />
+
+        <input type="submit" name="commit" value="Sign in" tabindex="3" class="btn btn-primary btn-block" data-disable-with="Signing in…" />
+      </div>
+</form>
+```
+
+Chromeの検証ツールを使って、`name="login"`と`name="password"`で値を送っていることがわかります。また、`authenticity_token`は毎回更新する度に変更されるので、クローラーを走らせるには、この値を毎回スクレイピングしてから、ログインIDとパスワードを送って認証する必要があります。
+
+![Chrome Developer Tool](.gitbook/assets/sign_in_to_github_-_github-2.png)
+
+
 
