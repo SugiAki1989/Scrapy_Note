@@ -388,7 +388,7 @@ Content-Type: text/html; charset=UTF-8
 
 ![Form Configuration](.gitbook/assets/sukurnshotto-2020-05-31-121156png.png)
 
-フォームに該当する部分のHTMLを抜き出すと、このようになっています。1行目のform要素のaction属性、method属性を確認すると、`method="post"`で`/session`というパスに情報を送ることがわかります。
+フォームに該当する部分のHTMLを抜き出すと、このようになっています。1行目のform要素のaction属性、method属性を確認すると、`method="post"`で`action="/session"`というパスに情報を送ることがわかります。
 
 ```markup
 <form action="/session" accept-charset="UTF-8" method="post"><input type="hidden" data-csrf="true" name="authenticity_token" value="****************==" />      <input type="hidden" name="ga_id" class="js-octo-ga-id-input">
@@ -444,9 +444,55 @@ Content-Type: text/html; charset=UTF-8
 </form>
 ```
 
-Chromeの検証ツールを使って、`name="login"`と`name="password"`で値を送っていることがわかります。また、`authenticity_token`は毎回更新する度に変更されるので、クローラーを走らせるには、この値を毎回スクレイピングしてから、ログインIDとパスワードを送って認証する必要があります。
+Chromeの検証ツールを使うと`name="login"`と`name="password"`で値を送っていることがわかります。また、`authenticity_token`は毎回更新する度に変更されるので、クローラーを走らせるには、この値を毎回スクレイピングしてから、ログインIDとパスワードを送って認証する必要があります。
 
 ![Chrome Developer Tool](.gitbook/assets/sign_in_to_github_-_github-2.png)
 
+Scrapyでやってみます。ここでは、食べログのサイトを参考にしてみます。scrapy shellでサイトにアクセスします。
 
+```markup
+$ scrapy shell "https://tabelog.com/"
+
+In [1]: from scrapy.http import FormRequest, Request当たり前ですが、トップページがそのまま返ってきます。なので、検索条件を指定してフォームリクエストを行うことで、自分がほしいページが返ってくるようにします。まずは、どのような値でリクエストを送ればよいのか調べます。ここでは、「東京（すべて）」「焼肉」「2020年5月31日」「19:00」「2名」という条件のレスポンスがほしいので、これを指定して、「検索」ボタンをおして、検証ツールからどのような値が必要なのか調べます。
+```
+
+当たり前ですが、トップページがそのまま返ってきます。なので、検索条件を指定してフォームリクエストを行うことで、自分がほしいページが返ってくるようにします。まずは、どのような値でリクエストを送ればよいのか調べます。ここでは、「渋谷駅」「焼肉」「2020年7月1日」「20:00」「10名」という条件のレスポンスがほしいので、これを指定して、「検索」ボタンをおして、検証ツールからどのような値が必要なのか調べます。
+
+![](.gitbook/assets/sukurnshotto-2020-05-31-153938png.png)
+
+画像を見る限り、`LstKind`から`key_datatype`まで様々な値を送っていることがわかります。なので、これを丸ごとコピーして辞書に直し、`FormRequest()`でリクエストします。そうすることで、検索条件を指定したあとのページをレスポンスとして受け取ることが可能です。検索ボタンのアクションは`action="https://tabelog.com/rst/rstsearch/"`となっているので、それをフォームリクエストでは使用します。
+
+```markup
+scrapy shell "https://tabelog.com/"
+
+from scrapy.http import FormRequest, Request
+
+data = {
+    "LstKind": "1",
+    "voluntary_search": "1",
+    "lid": "yoyaku-search_header",
+    "sa": "渋谷駅",
+    "sk": "焼肉",
+    "vac_net": "1",
+    "search_date": "2020/7/1(水)",
+    "svd": "20200701",
+    "svt": "2000",
+    "svps": "10",
+    "hfc": "1",
+    "area_datatype": "RailroadStation",
+    "area_id": "4698",
+    "key_datatype": "keyword",
+}
+
+page = FormRequest('https://tabelog.com/rst/rstsearch/',
+                   formdata = data)
+
+
+fetch(page)        
+view(response)
+```
+
+画像は`view(response)`の結果です。指定した条件でページを取得できています。食べログにはありませんでしたが、フォームリクエストでは、不正な攻撃を避けるために、Githubにあったような更新のたびに変更される値も必要になる場合があるので、それも必要であれば、スクレイピングして更新のたびに最新の値がとれるようにして、`FormRequest()`でリクエストします。
+
+![](.gitbook/assets/sukurnshotto-2020-05-31-154505png.png)
 
