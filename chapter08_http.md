@@ -365,38 +365,23 @@ MySQLなどのデータベースサーバーであれば、ポート番号は330
 
 Webページにアクセスすると、ポップアップと同時にアカウントとパスワードが求められる認証方式がHTTP認証です。HTTP認証の中でも広く使われる方法が、ベーシック認証です。ベーシック認証がかかっているURLにリクエストを送ると、401が返ってきます。
 
+![Basic&#x8A8D;&#x8A3C;](.gitbook/assets/sukurnshotto-2020-05-31-121100png.png)
+
 ```text
 # -I:HTTPレスポンスヘッダーの取得
-$ curl -I http://leggiero.sakura.ne.jp/xxxxbasic_auth_testxxxx/secret/kaiin_page_top.htm
+$ curl -I http://pythonscraping.com/pages/auth/login.php 
 HTTP/1.1 401 Unauthorized
-Server: nginx
-Date: Sat, 30 May 2020 21:48:21 GMT
-Content-Type: text/html; charset=iso-8859-1
-Connection: keep-alive
-WWW-Authenticate: Basic realm="?p?X???[?h?????ĂˁI"
+Date: Sun, 31 May 2020 03:08:50 GMT
+Server: Apache
+WWW-Authenticate: Basic realm="My Realm"
+Content-Type: text/html; charset=UTF-8
 ```
 
 ベーシック認証のアカウントとパスワードを送信する方法は`-u id:pass`でおくります。ログインできているようです。
 
 ```text
-$ curl -u 'kaiin:naisho' http://leggiero.sakura.ne.jp/xxxxbasic_auth_testxxxx/secret/kaiin_page_top.htm | iconv -f sjis -t utf8
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="ja">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
-	<title>秘密の会員ページトップ</title>
-</head>
-<body>
-秘密の会員ページへようこそ！
-
-</body>
-</html>~ 
-```
-
-URLにIDとパスワードを付けてリクエストすることも可能です。
-
-```text
-$ curl http://id:pass@www.example.com/ 
+➜ curl -u 'tabaka:awsedrft' http://pythonscraping.com/pages/auth/login.php 
+<p>Hello tabaka.</p><p>You entered awsedrft as your password.</p>~ 
 ```
 
 他にもフォームベース認証というものがあります。これは、名前の通りで、ログインフォームからIDとパスを認証する方法です。
