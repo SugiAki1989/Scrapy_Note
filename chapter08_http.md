@@ -460,7 +460,7 @@ In [1]: from scrapy.http import FormRequest, Request当たり前ですが、ト�
 
 ![Chrome Developer Tool](.gitbook/assets/sukurnshotto-2020-05-31-153938png.png)
 
-画像の右下を見る限り、`LstKind`から`key_datatype`まで様々な値を送っていることがわかります。なので、これを丸ごとコピーして辞書型に直し、`FormRequest()`でリクエストします。そうすることで、検索条件を指定したあとのページをレスポンスとして受け取ることが可能です。検索ボタンのアクションは`action="https://tabelog.com/rst/rstsearch/"`となっているので、それをフォームリクエストでは使用します。
+画像を見る限り、`LstKind`から`key_datatype`まで様々な値を送っていることがわかります。なので、これを丸ごとコピーして辞書に直し、`FormRequest()`でリクエストします。そうすることで、検索条件を指定したあとのページをレスポンスとして受け取ることが可能です。検索ボタンのアクションは`action="https://tabelog.com/rst/rstsearch/"`となっているので、それをフォームリクエストでは使用します。
 
 ```markup
 scrapy shell "https://tabelog.com/"
