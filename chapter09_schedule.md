@@ -115,5 +115,24 @@ Python:3.8.2 (v3.8.2:7b3ab5921f, Feb 24 2020, 17:52:18)
 MAILTO=""
 ```
 
+scrapyの場合、`scrapy crawl hoge`みたいな感じで毎回動かすのはcronではどのように設定すればよいのでしょうか。調べれば出てくるのですが、下記のように書けば定期的に実行できます。
+
+```text
+* * * * * [scrapyのフォルダ] && [scrapyのパス] crawl [spider_name]  >> [標準出力/標準エラー出力のパス]
+```
+
+実際にはこのような感じです。クローラーを作ったフォルダに移動し、scrapyへのパスを使って、クローラーを実行するという感じです。
+
+```text
+* * * * * cd ~/Documents/scrapy/quotes_spider && /Library/Frameworks/Python.framework/Versions/3.8/bin/scrapy crawl quotes -o test.json >> ~/Documents/scrapy/quotes_spider/exec-error.log 2>&1
+```
+
+時間になってcronjobが実行されると、出力内容とエクスポートしたjsonが出力されます。
+
+```text
+$ ls
+exec-error.log	quotes_spider	scrapy.cfg	test.json
+```
+
 ### Scraping Hub
 
