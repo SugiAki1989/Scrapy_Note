@@ -138,3 +138,71 @@ cronでscrapyを定期的に実行する方法は他にも色々あるみたい�
 
 ### Scraping Hub
 
+ここからScrapyの開発元でもあるScrapinghub Ltd.が提供するScrapingHubでクローラーを定期実行する方法をまとめておきます。ScrapingHubにデプロイする用のクローラーを作ります。対象サイトは何度も登場している偉人の名言サイトです。
+
+```text
+$ scrapy startproject scrapinghub_quotes
+
+You can start your first spider with:
+    cd scrapinghub_quotes
+    scrapy genspider example example.com
+
+$ cd scrapinghub_quotes
+$ scrapy genspider scrapinghub_quotes_spider quotes.toscrape.com
+```
+
+
+
+`scrapinghub_quotes_spider.py`の中身はこちらです。
+
+```python
+# -*- coding: utf-8 -*-
+from scrapy import Spider
+from scrapy import Request
+
+
+class ScrapinghubQuotesSpiderSpider(Spider):
+    name = 'scrapinghub_quotes_spider'
+    allowed_domains = ['quotes.toscrape.com']
+    start_urls = ['http://quotes.toscrape.com/']
+
+    def parse(self, response):
+        quotes = response.xpath('//*[@class="quote"]')
+
+        for quote in quotes:
+            text = quote.xpath('.//*[@class="text"]/text()').get()
+            author = quote.xpath('.//*[@class="author"]/text()').get()
+            tags = quote.xpath('.//*[@class="tag"]/text()').getall()
+
+            yield {
+                "text": text,
+                "author": author,
+                "tags": tags
+            }
+
+        next_page_url = response.xpath('//*[@class="next"]/a/@href').get()
+        abs_next_page_url = response.urljoin(next_page_url)
+        if abs_next_page_url is not None:
+            yield Request(abs_next_page_url, callback=self.parse)
+```
+
+アカウントを作成し、ScrapingHubにログインして、右上のCREATE PROJECTからプロジェクトを作成します。ここでは、プロジェクト名はquotesにします。
+
+![](.gitbook/assets/sukurnshotto-2020-06-02-220937png.png)
+
+```text
+# ScrapingHubの画面表示
+$ pip install shub
+$ shub login
+Enter your API key: ***************************
+$ shub deploy 111111
+
+shub deploy 111111
+Packing version 8764367-master
+Deploying to Scrapy Cloud project "111111"
+{"status": "ok", "project": 111111, "version": "8764367-master", "spiders": 1}
+Run your spiders at: https://app.scrapinghub.com/p/111111/
+```
+
+![](.gitbook/assets/sukurnshotto-2020-06-02-221419png%20%281%29.png)
+
