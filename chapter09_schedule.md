@@ -4,7 +4,7 @@
 
 ここではScrapyで作ったクローラーを定期的に実行する方法として、cronの設定やScrapingHubの使い方をまとめておきます。
 
-### cronについて
+### cron
 
 cronはUNIX系のシステムに常駐するデーモンプログラムの1つ。デーモンとは、メインメモリ上に常駐して機能を提供するバックグラウンドプロセスの一種で、あらかじめ指定した時間に処理を実行したりするもの、とのこと。
 
@@ -207,4 +207,20 @@ Run your spiders at: https://app.scrapinghub.com/p/111111/
 デプロイが完了すると、下記のように表示がかわります。これでデプロイは完了です。
 
 ![](.gitbook/assets/sukurnshotto-2020-06-02-221419png%20%281%29.png)
+
+画面左端のjobからDashboardをクリックし、右上のRunを押すとポップアップが表示されるので、さきほどデプロイしたクローラーの名前を指定します。Runをクリックするとスクレイピングが実行されます。
+
+![](.gitbook/assets/sukurnshotto-2020-06-02-222521png%20%281%29.png)
+
+Running jobにステータスが表示され、クローラーが走り終えると、Complete Jobに情報が移ります。ここでは100件の名言が取得され、リクエストはrobots.txtとページが10枚の合計11枚でエラーはなし、など情報が表示されます。
+
+![](.gitbook/assets/sukurnshotto-2020-06-02-222803png.png)
+
+Itemsの100をクリックすると、下記のようにスクレイピングしたアイテムの情報一覧のページに移ります。その画面の右上のExportからはcsv、json、json Lines、XMLなどからエクスポートできます。その他にも、RequestsページであればHTTPリクエストの一覧がみれますし、LogやStatでは、通常ターミナルに出力される内容が表示されています。
+
+![](.gitbook/assets/sukurnshotto-2020-06-02-223153png.png)
+
+これでクローラーを走らせる方法はわかったので、定期的に実行できるように、設定していきます。画面左端のDashboardの下にPeriodic Jobsがあるので、これをクリックします。そして、遷移先のページの右端の緑ボタンAdd Periodic Jobをクリックし、スケジュール設定を行い、SAVEボタンで保存します。これでスケジュール設定は完了です。
+
+![](.gitbook/assets/sukurnshotto-2020-06-02-223826png.png)
 
