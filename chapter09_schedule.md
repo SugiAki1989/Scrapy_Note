@@ -151,8 +151,6 @@ $ cd scrapinghub_quotes
 $ scrapy genspider scrapinghub_quotes_spider quotes.toscrape.com
 ```
 
-
-
 `scrapinghub_quotes_spider.py`の中身はこちらです。
 
 ```python
@@ -190,6 +188,8 @@ class ScrapinghubQuotesSpiderSpider(Spider):
 
 ![](.gitbook/assets/sukurnshotto-2020-06-02-220937png.png)
 
+プロジェクトを作成すると、コードをデプロイする方法が表示されます。ここではコマンドラインから支持に従って、デプロイします。
+
 ```text
 # ScrapingHubの画面表示
 $ pip install shub
@@ -203,6 +203,8 @@ Deploying to Scrapy Cloud project "111111"
 {"status": "ok", "project": 111111, "version": "8764367-master", "spiders": 1}
 Run your spiders at: https://app.scrapinghub.com/p/111111/
 ```
+
+デプロイが完了すると、下記のように表示がかわります。これでデプロイは完了です。
 
 ![](.gitbook/assets/sukurnshotto-2020-06-02-221419png%20%281%29.png)
 
