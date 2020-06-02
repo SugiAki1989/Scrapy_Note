@@ -134,5 +134,7 @@ $ ls
 exec-error.log	quotes_spider	scrapy.cfg	test.json
 ```
 
+cronでscrapyを定期的に実行する方法は他にも色々あるみたいなので、自分で検索してみてください。
+
 ### Scraping Hub
 
