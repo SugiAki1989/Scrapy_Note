@@ -138,7 +138,9 @@ cronでscrapyを定期的に実行する方法は他にも色々あるみたい�
 
 ### Scraping Hub
 
-ここからScrapyの開発元でもあるScrapinghub Ltd.が提供するScrapingHubでクローラーを定期実行する方法をまとめておきます。ScrapingHubにデプロイする用のクローラーを作ります。対象サイトは何度も登場している偉人の名言サイトです。
+![ScrapingHub](.gitbook/assets/rectangle_large_de2eff298a5b057cda88ed52be4ae9ac.webp)
+
+ここからScrapyの開発元でもあるScrapinghub Ltd.が提供するScrapingHubでクローラーを定期実行する方法をまとめておきます。ScrapingHubにデプロイする用のクローラーを作ります。無料枠であれば1つのクローラーを登録して実行できます。対象サイトは何度も登場している偉人の名言サイトです。
 
 ```text
 $ scrapy startproject scrapinghub_quotes
