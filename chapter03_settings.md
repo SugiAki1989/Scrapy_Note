@@ -19,10 +19,6 @@ Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like 
 #USER_AGENT = 'sample_pj (+http://www.yourdomain.com)'
 ```
 
-Webブラウザによるすべてのリクエストには、ユーザーエージェントが含まれます。そのため、1つのユーザーエージェントから多数のリクエストを送信すると、ブロックされる場合があります。そのため、ユーザーエージェントを切り替えるなどの必要があります。これは1つのIPアドレスから多数のリクエストを送信する場合も同じで、ブロックされる可能性があります。
-
-Scrapyには、scrapy-fake-useragentというライブラリを併用することで、毎回のリクエストで異なるユーザーエージェントからのリクエストを実現できます。また、scrapy-proxies-toolでは、IPアドレスを変更することで、特定のIPアドレスを禁止されることを防止できます。
-
 ### ROBOTSTXT\_OBEY
 
 Trueにしておけば、robots.txtのDisallowページのクローリングを防止できるので、Trueが推奨されます。
