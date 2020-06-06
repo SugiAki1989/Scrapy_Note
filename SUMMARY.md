@@ -10,4 +10,5 @@
 * [第7章　ScrapyとMySQL](chapter07_mysql.md)
 * [第8章　ScrapyとHTTP](chapter08_http.md)
 * [第9章　Scrapyのスケジューリング](chapter09_schedule.md)
+* [第10章 ScrapyとRaspberry Pi](chapter10_raspberrypi.md)
 
