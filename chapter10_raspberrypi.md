@@ -120,17 +120,34 @@ kern.*              -/var/log/kern.log
 lpr.*               -/var/log/lpr.log
 mail.*              -/var/log/mail.log
 user.*              -/var/log/user.log
-
 ```
 
 
+
+テキストエディタとしてVS CODEを入れておきます。
 
 ```text
 pi@raspberrypi:~ $ sudo -s
 root@raspberrypi:/home/pi# . <( wget -O - https://code.headmelted.com/installers/apt.sh )
+root@raspberrypi:~# su pi
 ```
 
-あ
+下記のコマンドでVS CODEを起動できます。
+
+```text
+pi@raspberrypi:~ $ code-oss
+```
+
+![](.gitbook/assets/sukurnshotto-2020-06-08-185538png.png)
+
+試しにデスクトップに`hello.py`を作成して実行してみます。
+
+```text
+pi@raspberrypi:~ $ python3 ~/Desktop/hello.py
+Hello Python From VS CODE
+```
+
+補足ですが、GUIからCUIに変更するには、「Raspberry Piマーク &gt; 設定 &gt; Raspberry Piの設定」と進み、「システム」からブートをCLIにしてから再起動します。
 
 ![](.gitbook/assets/sukurnshotto-2020-06-08-184301png.png)
 
