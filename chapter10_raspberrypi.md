@@ -46,15 +46,13 @@ pi@raspberrypi:~ $ sudo apt-get install python-scrapy
 略
 ~~~~~~
 
-pi@raspberrypi:~ $ pip install PyMySQL
+pi@raspberrypi:~ $ pip3 install PyMySQL
+
 Looking in indexes: https://pypi.org/simple, https://www.piwheels.org/simple
 Collecting PyMySQL
-
-  Downloading https://files.pythonhosted.org/packages/ed/39/15045ae46f2a123019aa968dfcba0396c161c20f855f11dea6796bcaae95/PyMySQL-0.9.3-py2.py3-none-any.whl (47kB)
-    100% |████████████████████████████████| 51kB 787kB/s 
+  Using cached https://files.pythonhosted.org/packages/ed/39/15045ae46f2a123019aa968dfcba0396c161c20f855f11dea6796bcaae95/PyMySQL-0.9.3-py2.py3-none-any.whl
 Installing collected packages: PyMySQL
 Successfully installed PyMySQL-0.9.3
-
 ```
 
 次はMySQLです。
@@ -122,8 +120,6 @@ mail.*              -/var/log/mail.log
 user.*              -/var/log/user.log
 ```
 
-
-
 テキストエディタとしてVS CODEを入れておきます。
 
 ```text
@@ -147,7 +143,27 @@ pi@raspberrypi:~ $ python3 ~/Desktop/hello.py
 Hello Python From VS CODE
 ```
 
-補足ですが、GUIからCUIに変更するには、「Raspberry Piマーク &gt; 設定 &gt; Raspberry Piの設定」と進み、「システム」からブートをCLIにしてから再起動します。
+最後にSSHでログインできるか確認しておきます。下記の`ifconfig`コマンドでipアドレスを調べ、SSHでターミナルからログインします。
+
+```text
+$ ssh pi@***.***.*.**
+pi@***.***.*.**'s password: 
+Linux raspberrypi 4.19.118-v7l+ #1311 SMP Mon Apr 27 14:26:42 BST 2020 armv7l
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Mon Jun  8 16:55:34 2020 from ***.***.*.**
+
+
+pi@raspberrypi:~ $ cat /etc/issue
+Raspbian GNU/Linux 10
+```
+
+問題なくSSHでもアクセスできるようになったので、これ以降は環境にあわせて、Raspberry Piを設定してください。GUIからCUIに変更するには、「Raspberry Piマーク &gt; 設定 &gt; Raspberry Piの設定」と進み、「システム」からブートをCLIにしてから再起動します。
 
 ![](.gitbook/assets/sukurnshotto-2020-06-08-184301png.png)
 
@@ -165,6 +181,106 @@ $ sudo raspi-config
 
 7 Advanced Options
 → A5 Resolution
-→→ モニタの解像度の設置
+→→ モニタの解像度の設定
 ```
+
+### データベースのテストインサート
+
+MySQLにテストでインサートできるかを確認しておく。まずはMySQLにログインし、下記の通り、テスト用のテーブルを先程作成した`test_db`の中に作成する。
+
+```text
+pi@raspberrypi:~ $ mysql -u user01 -p
+Enter password: ****
+
+MariaDB [(none)]> use test_db;
+Database changed
+
+MariaDB [test_db]> CREATE TABLE test (
+    ->   id int(11) NOT NULL AUTO_INCREMENT,
+    ->   name varchar(50) NOT NULL,
+    ->   value double NOT NULL,
+    ->   text text NOT NULL,
+    ->   PRIMARY KEY (id)
+    -> )  ENGINE = INNODB DEFAULT CHARSET = UTF8
+    -> ;
+Query OK, 0 rows affected (0.038 sec)
+
+MariaDB [test_db]> show tables;
++-------------------+
+| Tables_in_test_db |
++-------------------+
+| test              |
++-------------------+
+1 row in set (0.001 sec)
+```
+
+下記のテストインサート用のコード`test_insert.py`を利用します。
+
+```text
+import pymysql
+import datetime
+
+connection = pymysql.connect(user="user01",
+                             password="user01",
+                             host="localhost",
+                             database="test_db",
+                             charset="utf8")
+
+def main():
+    datum = data_generator()
+    start_time = datetime.datetime.now()
+    insert_data(datum)
+    end_time = datetime.datetime.now()
+    diff_time = end_time - start_time
+    print("Elapsed Time:" + str(diff_time))
+
+def data_generator():
+    values = []
+    for i in range(10):
+        name = "name_{}".format(i)
+        value = i
+        text = "text_{}".format(i)
+        values.append([name, value, text])
+
+    return values
+
+def insert_data(values):
+    insert_sql = "INSERT INTO `test` (`name`, `value`, `text`) VALUES (%s, %s, %s)"
+
+    cursor = connection.cursor()
+    for value in values:
+        cursor.execute(insert_sql, value)
+
+    connection.commit()
+    connection.close()
+
+if __name__ == "__main__":
+    main()
+```
+
+とりあえずデスクトップに保存し、インサートを実行します。問題なく`test`テーブルにインサートが行われています。
+
+```text
+pi@raspberrypi:~ $ python3 ~/Desktop/test_insert.py
+Elapsed Time:0:00:00.009876
+
+MariaDB [test_db]>  select * from test;
++----+--------+-------+--------+
+| id | name   | value | text   |
++----+--------+-------+--------+
+|  1 | name_0 |     0 | text_0 |
+|  2 | name_1 |     1 | text_1 |
+|  3 | name_2 |     2 | text_2 |
+|  4 | name_3 |     3 | text_3 |
+|  5 | name_4 |     4 | text_4 |
+|  6 | name_5 |     5 | text_5 |
+|  7 | name_6 |     6 | text_6 |
+|  8 | name_7 |     7 | text_7 |
+|  9 | name_8 |     8 | text_8 |
+| 10 | name_9 |     9 | text_9 |
++----+--------+-------+--------+
+10 rows in set (0.001 sec)
+```
+
+これでRaspberry PiでScrapyを定期的に実行し、データベースに保存する準備が整いました。
 
