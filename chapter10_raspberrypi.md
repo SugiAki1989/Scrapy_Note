@@ -221,7 +221,7 @@ import pymysql
 import datetime
 
 connection = pymysql.connect(user="user01",
-                             password="user01",
+                             password="user01 passwaord",
                              host="localhost",
                              database="test_db",
                              charset="utf8")
