@@ -102,7 +102,8 @@ MariaDB [mysql]> SELECT USER, HOST FROM mysql.user;
 cronの設定を行います。下記コンフィグファイルを開き、cronがコメントアウトされているので、`#`を削除してcronを使えるようにします。
 
 ```text
-pi@raspberrypi:~ $ sudo vi /etc/rsyslog.conf
+pi@raspberrypi:~ $ sudo apt-get install vim
+pi@raspberrypi:~ $ sudo vim /etc/rsyslog.conf
 
 ###############
 #### RULES ####
@@ -143,7 +144,33 @@ pi@raspberrypi:~ $ python3 ~/Desktop/hello.py
 Hello Python From VS CODE
 ```
 
-最後にSSHでログインできるか確認しておきます。下記の`ifconfig`コマンドでipアドレスを調べ、SSHでターミナルからログインします。
+最後にSSHでログインできるか確認しておきます。まずは、下記の`ip addr`コマンドでipアドレスを調べ、ipアドレスが定期的に変動しないようにを固定します。
+
+```text
+pi@raspberrypi:~ $ ip addr | grep 192
+    inet ***.***.*.**/24 brd ***.***.*.** scope global dynamic noprefixroute wlan0
+```
+
+`ip_address`の部分は固定した番号に変更してください。
+
+```text
+pi@raspberrypi:~ sudo vim /etc/dhcpcd.conf
+
+# 下記を末尾に追加します。
+interface wlan0
+static ip_address=192.168.*.**/24
+static routers=192.168.1.1
+static domain_name_servers=192.168.1.1
+```
+
+再起動して、ipアドレスを確認します。固定した番号が表示されるはずです。
+
+```text
+pi@raspberrypi:~ $ ip addr | grep 192
+    inet ***.***.*.**/** brd ***.***.*.*** scope global noprefixroute wlan0
+```
+
+SSHでターミナルからログインします。
 
 ```text
 $ ssh pi@***.***.*.**
