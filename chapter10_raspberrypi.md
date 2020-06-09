@@ -17,7 +17,7 @@ Scrapy 1.5.1 - no active project
 
 ### Raspberry Piのセットアップ
 
-ここで書く必要も無いかもしれませんが、まとめておきます。まずは購入したRaspberry Piにフォーマット済みのSDカードとRaspberry Pi Imagerを使って、Raspbianをインストールしていきます。
+ここで書く必要も無いかもしれませんが、まとめておきます。まずは購入したRaspberry Piにフォーマット済みのSDカードとRaspberry Pi Imagerを使って、Raspbianをインストールしていきます。RaspbianはLinuxのディストリビューションであるDebianをベースにしているOSなので、似たような操作感で操作ができます。
 
 * [Raspberry Pi Kit](https://www.amazon.co.jp/gp/product/B082VVJCPT/ref=ppx_yo_dt_b_asin_title_o01_s00?ie=UTF8&psc=1)
 * [SDメモリカードフォーマッター](https://www.sdcard.org/jp/downloads/formatter/eula_mac/index.html)
@@ -25,7 +25,12 @@ Scrapy 1.5.1 - no active project
 
 SDカードをRaspberry Piに差し込み、電源を起動すると、Raspberry Piが起動します。設定ウィザードが表示されるので、順に従って設定します。
 
-「Set Country」では、「日本」を設定しておきます。「Change Password」では、パスワードは初期設定のままだと「pi / raspberry」になっているので、よしなに修正します。「Set Up Screen」が表示されるので、スクリーンの端に黒い線が表示されているのであればチェックボックスにチェックをいれます。「Select WiFi NetWork」では、WiFiのネットワークを設定します。「Update Software」では、アップデートしておきます。そして、再起動します。
+1. Set Countryでは、「日本」を設定しておきます。
+2. Change Passwordでは、パスワードは初期設定のままだと「pi / raspberry」になっているので、よしなに修正します。
+3. Set Up Screenが表示されるので、スクリーンの端に黒い線が表示されているのであればチェックボックスにチェックをいれます。
+4. Select WiFi NetWorkでは、WiFiのネットワークを設定します。
+5. Update Softwareでは、アップデートしておきます。
+6. 再起動します。
 
 再起動後、「Raspberry Piマーク &gt; 設定 &gt; Raspberry Piの設定」と進み、
 
@@ -55,7 +60,7 @@ Installing collected packages: PyMySQL
 Successfully installed PyMySQL-0.9.3
 ```
 
-次はMySQLです。
+次はMySQLです。正確にはMariaDBですが、MariaDBはMySQLから派生したもので、非常に互換性も高く、細かい部分を除けばMySQLと同じような操作感で使用できます。
 
 ```text
 $ sudo apt-get install mariadb-server
@@ -213,7 +218,7 @@ $ sudo raspi-config
 
 ### データベースのテストインサート
 
-MySQLにテストでインサートできるかを確認しておく。まずはMySQLにログインし、下記の通り、テスト用のテーブルを先程作成した`test_db`の中に作成する。
+データベースにテストでインサートできるかを確認しておく。まずはデータベースにログインし、下記の通り、テスト用のテーブルを先程作成した`test_db`の中に作成します。
 
 ```text
 pi@raspberrypi:~ $ mysql -u user01 -p
@@ -241,11 +246,11 @@ MariaDB [test_db]> show tables;
 1 row in set (0.001 sec)
 ```
 
-下記のテストインサート用のコード`test_insert.py`を利用します。
+下記のテストインサート用のコード`test_insert.py`を利用します。`pymysql`でMariaDBは操作できるので、これまでの内容と合わせるために、`pymysql`を利用します。
 
 ```text
-import pymysql
 import datetime
+import pymysql
 
 connection = pymysql.connect(user="user01",
                              password="user01 passwaord",
