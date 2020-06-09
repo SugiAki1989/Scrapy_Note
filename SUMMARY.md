@@ -9,6 +9,6 @@
 * [第6章　Scrapy Tutorial2](chapter06_tutorial02.md)
 * [第7章　ScrapyとMySQL](chapter07_mysql.md)
 * [第8章　ScrapyとHTTP](chapter08_http.md)
-* [第9章　Scrapyのスケジュール・・・修正](chapter09_schedule.md)
+* [第9章　Scrapyのスケジュール](chapter09_schedule.md)
 * [第10章 ScrapyとRaspberry Pi](chapter10_raspberrypi.md)
 
