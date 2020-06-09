@@ -218,7 +218,7 @@ $ sudo raspi-config
 →→ モニタの解像度の設定
 ```
 
-### データベースへのテストインサート
+### データベースのテストインサート
 
 データベースにテストでインサートできるかを確認しておく。まずはデータベースにログインし、下記の通り、テスト用のテーブルを先程作成した`test_db`の中に作成します。
 
@@ -316,47 +316,5 @@ MariaDB [test_db]>  select * from test;
 10 rows in set (0.001 sec)
 ```
 
-### cronのテスト
-
-次はcronが実際に動かうかどうか、動作テストをしていきます。下記のようなバッシュスクリプトを作成します。これはRaspberry Piの温度を表示してくれるものです。
-
-```bash
-#!/bin/bash
- 
-date=(`date +"%m/%d"`)
-time=(`date +"%H:%M"`)
-temp=(`vcgencmd measure_temp`)
-str=$date" "$time" "$temp
-echo $str
-```
-
-次はcronの設定です。ここではデスクトップにファイルを保存して、1分毎にログを出力するようにします。
-
-```text
-pi@raspberrypi:~ $ crontab -l
-*/1 * * * * bash ~/Desktop/heat.sh >> ~/Desktop/execute.log 2>&1
-```
-
-数分ほど放置しておいたあとでログファイルを見てみると、cronは問題なく動いていることがわかります。
-
-```text
-pi@raspberrypi:~ $ cat ~/Desktop/execute.log 
-06/09 11:44 temp=45.0'C
-06/09 11:45 temp=44.0'C
-06/09 11:46 temp=45.0'C
-06/09 11:47 temp=45.0'C
-06/09 11:48 temp=44.0'C
-06/09 11:49 temp=45.0'C
-06/09 11:50 temp=45.0'C
-06/09 11:51 temp=44.0'C
-06/09 11:52 temp=44.0'C
-06/09 11:53 temp=43.0'C
-06/09 11:54 temp=42.0'C
-06/09 11:55 temp=41.0'C
-06/09 11:56 temp=40.0'C
-```
-
 これでRaspberry PiでScrapyを定期的に実行し、データベースに保存する準備が整いました。
-
-### Scrapyを実行する
 
