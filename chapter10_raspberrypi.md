@@ -2,7 +2,9 @@
 
 ## はじめに
 
-ここではScrapyで作ったクローラーをRaspberry Piで定期的に実行する方法をまとめておきます。Raspberry Pi、Python3、Scrapyのバージョンは下記の通りです。
+ここでは、Raspberry Piのセットアップ、Scrapyのインストール、MariDBのインストール、IPアドレスの固定、SSHとVNCでの接続、VS CODEのインストールの作業をはじめに行います。そして、実際に、Scrapyで作ったクローラーをRaspberry Piで定期的に実行する方法をまとめておきます。
+
+Raspberry Pi、Python3、Scrapyのバージョンは下記の通りです。
 
 ```text
 pi@raspberrypi:~ $ cat /etc/issue
