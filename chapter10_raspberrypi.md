@@ -197,7 +197,25 @@ pi@raspberrypi:~ $ cat /etc/issue
 Raspbian GNU/Linux 10
 ```
 
-問題なくSSHでもアクセスできるようになったので、これ以降は環境にあわせて、Raspberry Piを設定してください。GUIからCUIに変更するには、「Raspberry Piマーク &gt; 設定 &gt; Raspberry Piの設定」と進み、「システム」からブートをCLIにしてから再起動します。
+問題なくSSHでもアクセスできるようになっています。もう1つ試しておきます。それは`scp`コマンドです。このコマンドはローカルのデータをSSH経由でサーバーに転送するコマンドです。Raspberry Pi側でScrapyのクローラーを作っても良いのですが、少し重たいので、手元のPCで作ったものをディレクトリごと、Raspberry Piに転送してクローラーを起動させることにします。もちろん、Git経由でも他の方法でも、転送できれば何でも良いです。
+
+`-r`のオプションをつけるとディレクトリをコピーすることができます。ここでは、`crawl.py`を格納している`scrapy_scp`というディレクトリを丸ごと Raspberry Piのデスクトップに転送します。
+
+```text
+➜ scp -r ~/Desktop/scrapy_scp pi@***.***.*.**:~/Desktop/
+pi@***.***.*.**'s password: 
+crawl.py         100%    0     0.0KB/s   00:00 
+```
+
+Raspberry Pi側で確認しておきます。デスクトップに`scrapy_scp`というディレクトリが作られ、`crawl.py`も保存されています。
+
+```text
+pi@raspberrypi:~ $ tree ~/Desktop/scrapy_scp/
+/home/pi/Desktop/scrapy_scp/
+└── crawl.py
+```
+
+これ以降は環境にあわせて、Raspberry Piを設定してください。GUIからCUIに変更するには、「Raspberry Piマーク &gt; 設定 &gt; Raspberry Piの設定」と進み、「システム」からブートをCLIにしてから再起動します。
 
 ![](.gitbook/assets/sukurnshotto-2020-06-08-184301png.png)
 
@@ -218,7 +236,7 @@ $ sudo raspi-config
 →→ モニタの解像度の設定
 ```
 
-### データベースのテストインサート
+### データベースへのテストインサート
 
 データベースにテストでインサートできるかを確認しておく。まずはデータベースにログインし、下記の通り、テスト用のテーブルを先程作成した`test_db`の中に作成します。
 
@@ -316,5 +334,47 @@ MariaDB [test_db]>  select * from test;
 10 rows in set (0.001 sec)
 ```
 
+### cronのテスト
+
+次はcronが実際に動かうかどうか、動作テストをしていきます。下記のようなバッシュスクリプトを作成します。これはRaspberry Piの温度を表示してくれるものです。
+
+```bash
+#!/bin/bash
+ 
+date=(`date +"%m/%d"`)
+time=(`date +"%H:%M"`)
+temp=(`vcgencmd measure_temp`)
+str=$date" "$time" "$temp
+echo $str
+```
+
+次はcronの設定です。ここではデスクトップにファイルを保存して、1分毎にログを出力するようにします。
+
+```text
+pi@raspberrypi:~ $ crontab -l
+*/1 * * * * bash ~/Desktop/heat.sh >> ~/Desktop/execute.log 2>&1
+```
+
+数分ほど放置しておいたあとでログファイルを見てみると、cronは問題なく動いていることがわかります。
+
+```text
+pi@raspberrypi:~ $ cat ~/Desktop/execute.log 
+06/09 11:44 temp=45.0'C
+06/09 11:45 temp=44.0'C
+06/09 11:46 temp=45.0'C
+06/09 11:47 temp=45.0'C
+06/09 11:48 temp=44.0'C
+06/09 11:49 temp=45.0'C
+06/09 11:50 temp=45.0'C
+06/09 11:51 temp=44.0'C
+06/09 11:52 temp=44.0'C
+06/09 11:53 temp=43.0'C
+06/09 11:54 temp=42.0'C
+06/09 11:55 temp=41.0'C
+06/09 11:56 temp=40.0'C
+```
+
 これでRaspberry PiでScrapyを定期的に実行し、データベースに保存する準備が整いました。
+
+### Scrapyを実行する
 
