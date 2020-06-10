@@ -504,6 +504,10 @@ class MySQLPipeline:
 ITEM_PIPELINES = {
     'ynews_spider.pipelines.MySQLPipeline': 800,
 }
+
+【最終行まで略】
+
+FEED_EXPORT_ENCODING = 'utf-8'
 ```
 
 `scp`コマンドでクローラーのスクリプトを転送します。
