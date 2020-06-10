@@ -177,6 +177,12 @@ pi@raspberrypi:~ $ ip addr | grep 192
     inet ***.***.*.**/** brd ***.***.*.*** scope global noprefixroute wlan0
 ```
 
+この作業のあとにブラウザからインターネットにアクセスできないようになっている場合は下記のコマンドで修正します。
+
+```text
+$ sudo dhclient wlan0
+```
+
 SSHでターミナルからログインします。
 
 ```text
@@ -383,4 +389,191 @@ pi@raspberrypi:~ $ cat ~/Desktop/execute.log
 これでRaspberry PiでScrapyを定期的に実行し、データベースに保存する準備が整いました。
 
 ### Scrapyを実行する
+
+今回は、ヤフーニュースの記事を取得するクローラーを作成していきます。ここではローカルで作業したものをRaspberry Piに転送します。いつものようにプロジェクトを作成します。
+
+```text
+$ scrapy startproject ynews_spider
+$ cd ynews_spider
+$ scrapy genspider yahoo_news_spider news.yahoo.co.jp
+Created spider 'yahoo_news_spider' using template 'basic' in module:
+```
+
+`items.py`は
+
+```text
+# -*- coding: utf-8 -*-
+import scrapy
+
+
+class Headline(scrapy.Item):
+    title = scrapy.Field()
+    body = scrapy.Field()
+    news_id = scrapy.Field()
+    news_agency = scrapy.Field()
+```
+
+`yahoo_news_spider.py`は
+
+```text
+# -*- coding: utf-8 -*-
+from scrapy import Spider
+from scrapy.http import Request
+from ynews_spider.items import Headline
+
+
+class YahooNewsSpiderSpider(Spider):
+    name = 'yahoo_news_spider'
+    allowed_domains = ['news.yahoo.co.jp',
+                       'headlines.yahoo.co.jp']
+    start_urls = ['https://news.yahoo.co.jp/']
+
+    def parse(self, response):
+        urls = response.xpath('.//*[@class="topicsListItem "]/a/@href').getall()
+        for url in urls:
+            absolute_url = response.urljoin(url)
+            yield Request(absolute_url,
+                          callback=self.parse_summary)
+
+    def parse_summary(self, response):
+        detail_url = response.xpath('.//*[@class="pickupMain_detailLink"]/a/@href').get()
+        news_id = response.url.split('pickup/')[1]
+        news_agency = response.xpath('.//*[@class="pickupMain_media"]/text()').get()
+
+        yield Request(detail_url,
+                      callback=self.parse_news,
+                      meta={"news_id": news_id,
+                            "news_agency": news_agency}
+                      )
+
+    def parse_news(self, response):
+        item = Headline()
+        item["news_id"] = response.meta["news_id"]
+        item["news_agency"] = response.meta["news_agency"]
+        item["title"] = response.xpath('.//*[@class="sc-cmTdod hpDMzp"]/text()').get()
+        tmp = response.xpath('.//*[@class="sc-dVhcbM hFPXIO yjDirectSLinkTarget"]/text()').getall()
+        item["body"] = ' '.join(tmp)
+
+        yield item
+```
+
+`pipelines.py`は、
+
+```text
+# -*- coding: utf-8 -*-
+import pymysql
+
+class MySQLPipeline:
+    def open_spider(self, spider):
+        self.connection = pymysql.connect(
+            host="localhost",
+            user="*******",   # change here
+            passwd="*******", # change here
+            database="news",
+            charset="utf8mb4"
+        )
+        self.cursor = self.connection.cursor()
+
+    def process_item(self, item, spider):
+        # duplication check
+        check_news_id = item["news_id"]
+        print(check_news_id)
+        find_qry = "SELECT `news_id` FROM `ynews` WHERE `news_id` = %s"
+        is_done = self.cursor.execute(find_qry, check_news_id)
+
+        # if already a record exists in database, return 1
+        if is_done == 0:
+            insert_qry = "INSERT INTO `ynews` (`title`, `body`, `news_id`, `news_agency`) VALUES (%s, %s, %s, %s)"
+            self.cursor.execute(insert_qry, (item["title"], item["body"], item["news_id"], item["news_agency"]))
+            self.connection.commit()
+        else:
+            pass
+
+        return item
+
+    def close_spider(self, spider):
+        self.connection.close()
+
+```
+
+`settings.py`は
+
+```text
+# Configure item pipelines
+# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+ITEM_PIPELINES = {
+    'ynews_spider.pipelines.MySQLPipeline': 800,
+}
+```
+
+`scp`コマンドでクローラーのスクリプトを転送します。
+
+```text
+scp -r ~/Documents/scrapy/ynews_spider pi@***.***.*.**:~/Desktop/
+```
+
+Raspberry Piではデータを受け取るDBにテーブルを作成しておきます。
+
+```text
+CREATE DATABASE news;
+USE news;
+
+CREATE TABLE ynews(news_id BIGINT(7) NOT NULL AUTO_INCREMENT,
+                   title TEXT,
+                   body TEXT,
+                   news_agency VARCHAR(50),
+                   created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                   PRIMARY KEY(news_id));
+```
+
+cronを設定します。1時間ごとにクロールするように設定します。
+
+```text
+pi@raspberrypi:~ $ crontab -e
+* */1 * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
+```
+
+時間になると下記のようにクローラーが実行されていることがわかります。
+
+```text
+MariaDB [news]> select * from ynews \G
+*************************** 1. row ***************************
+    news_id: 6362128
+      title: 炎上10年辻希美　中傷ばかりから評価一転、尊敬されはじめている〈dot.〉
+       body: 　ユーチューブやSNSなどで、自身のライフスタイルを発信する芸能人が増加している昨今。そんな芸能人の先駆けといえば、元モーニング娘。でタレントの辻希美（32）だろう。2007年に俳優の杉浦太陽と結婚し、同年11月に長女を出産。2009年に開設したブログでの投稿が話題を呼び、ママタレとして活躍。昨年はユーチューブで「辻ちゃんネル」を開設し、さらに活動の幅を広げている。
+ 　一方、辻の言動に対する厳しい声がたびたび取り上げられることもあった。歩きながら授乳をして炎上、通夜に大きなリボンにミニスカという格好で参列して炎上、挙句の果てにはイチゴに練乳をかけて炎上と、もはや炎上がネタと化し、辻＝炎上系ママタレというイメージを持っている人も多いだろう。
+「ブログに何かをアップすると、すかさず既婚女性の集う掲示板などでスレッドが立ち上がり、揚げ足を取るような批判コメントがたくさん書き込まれるんです。もはや大喜利のネタのような状態ですが、それが10年以上続いている。芸能系のネットニュースも取り上げると安定したPVが見込まれるので、鉄板コンテンツとしてどこも重宝している。5月も、コロナ禍で巣ごもり生活を送る辻は頻繁に料理の写真をアップしていましたが、『オムライスがお粗末』『ナムルが（保存袋に）パンパン』『鯛がもったいない』など言いがかりのような記事のオンパレードでした」（エンタメ系ニュースサイトの編集者）
+　だが10年も続けていれば、潮目も変わってくる。最近、意外と辻を称賛する声が多くなってきているのだ。
+「2018年に三男を出産し、現在は4児の母。変わらずブログなどで日常をつづっていますが、4人の子育てをしながらの頑張りぶりに感銘を受ける人が増えているようです。例えば、3月に7歳になった次男の誕生会についてブログにつづっていましたが、バルーンで部屋を飾り、次男が好きだという人気マンガ『鬼滅の刃』のケーキを用意。ゲームやトランプやUNOをしたそうで、そんな愛情あれる母親ぶりにSNS上では『家族パーティーでこんなに飾り付けてくれるのすごい！』『いいお母さんの素養があった』と、称賛の声が集まってました。また、5月5日のブログでは、『子ども達リクエストでお寿司と焼肉にしました』と綴り、こどもの日に作った料理を公開。春巻きがカブトの形をしていたりと手の込んだ内容に『イベントに精出してくれる母親を持って子どもは嬉しいだろうな』『子ども達を喜ばせるために頑張ってる』と、好感の声が多かったです」（女性週刊誌の記者）
+news_agency: AERA dot.
+    created: 2020-06-10 23:18:23
+*************************** 2. row ***************************
+    news_id: 6362149
+      title: 藤井聡太の将棋はどこが美しいのか。「芸術作品」と評す飯島七段に聞く。
+       body: 「いやあ、鳥肌が立ちます。この将棋は、善悪を超えた芸術作品だと思います」
+
+　6月4日、将棋の8大タイトルの1つである棋聖戦の挑戦者決定戦で、藤井聡太七段(17)が永瀬拓矢二冠(27)を破り、タイトル初挑戦を決めた。
+
+【略】
+*************************** 7. row ***************************
+    news_id: 6362162
+      title: 回転寿司チェーン店長が「過労死」 幼子2人を抱えた妻、涙の会見「優しかった夫は帰ってきません」
+       body: 東京を中心にチェーン展開する回転寿司店で店長として働いていた男性（当時41歳）が2019年5月7日に亡くなったのは、過労が原因だったとして、三鷹労働基準監督署が今年5月25日に労災認定していたことがわかった。
+
+男性の妻（30代、都内）が6月10日、会見で明らかにし、「どんな補償がおりても、主人との時間には代えられません。いつも笑顔で優しかった主人は帰ってきません」と涙ながらに語った。
+●週休1日、過労死ライン超えの時間外労働
+男性は2014年4月、「サカイ総業」グループの「サカイ商事」に入社し、運営する回転寿司店「元祖寿司」で働いていた。
+2016年7月から店長になり、吉祥寺の店舗に勤めていた2019年5月7日、心臓性突然死（致死性不整脈による心停止）によって自宅で突然亡くなった。
+男性は店長として店全体を統括。従業員・アルバイトの監督、魚の仕入れから握りまでこなすほか、トラブル対応も一任され、営業日報をまとめ、会計の締め作業や、月1回の店長会議に出席していた。
+遺族側代理人の川人博弁護士によると、男性は基本的に週休1日で働きづめだった。店の営業時間は午前11時～午後10時だが、午前9時半には店に出て、午後11時ころに店を出るような生活を繰り返していたという。睡眠時間は4～5時間という日が続いたそうだ。
+男性の他に社員は1～2人。ほかは外国人アルバイトが3～4人で、人手不足も慢性的だった。
+遺族は2019年10月25日に労災を申請。このたび、労災が認定され、労災遺族年金等の支給が決まった。
+遺族側の主張と大きく隔たりはあるものの、残業時間は死亡前5カ月平均が80時間、死亡前6カ月平均は84時間と、「過労死ライン」とされる80時間を上回っていたと認定された。もっとも多い月は106時間52分に達していた。
+
+【略】
+
+news_agency: 弁護士ドットコム
+    created: 2020-06-10 23:18:29
+7 rows in set (0.000 sec)
+```
 
