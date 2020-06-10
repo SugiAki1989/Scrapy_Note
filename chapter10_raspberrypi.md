@@ -215,6 +215,12 @@ pi@raspberrypi:~ $ tree ~/Desktop/scrapy_scp/
 └── crawl.py
 ```
 
+反対にRaspberry Piのデータをもらう場合は下記のように書きます。ここでは、Raspberry PiのDesktopにある`excute.log`というデータをローカルのデスクトップに転送する例です。
+
+```text
+$ scp pi@***.***.*.**:~/Desktop/execute.log ~/Desktop/
+```
+
 これ以降は環境にあわせて、Raspberry Piを設定してください。GUIからCUIに変更するには、「Raspberry Piマーク &gt; 設定 &gt; Raspberry Piの設定」と進み、「システム」からブートをCLIにしてから再起動します。
 
 ![](.gitbook/assets/sukurnshotto-2020-06-08-184301png.png)
