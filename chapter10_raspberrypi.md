@@ -509,15 +509,38 @@ ITEM_PIPELINES = {
 `scp`コマンドでクローラーのスクリプトを転送します。
 
 ```text
-scp -r ~/Documents/scrapy/ynews_spider pi@***.***.*.**:~/Desktop/
+$ scp -r ~/Documents/scrapy/ynews_spider pi@***.***.*.**:~/Desktop/
+scrapy.cfg                                                                  100%  267    91.6KB/s   00:00    
+yahoo_news_spider.py                                                        100% 1504   348.5KB/s   00:00    
+__init__.py                                                                 100%  161    44.5KB/s   00:00    
+__init__.cpython-38.pyc                                                     100%  164    49.3KB/s   00:00    
+yahoo_news_spider.cpython-38.pyc                                            100% 1749   407.0KB/s   00:00    
+__init__.py                                                                 100%    0     0.0KB/s   00:00    
+__init__.cpython-38.pyc                                                     100%  156    45.0KB/s   00:00    
+settings.cpython-38.pyc                                                     100%  481   161.5KB/s   00:00    
+items.cpython-38.pyc                                                        100%  421    99.8KB/s   00:00    
+pipelines.cpython-38.pyc                                                    100% 1293   290.7KB/s   00:00    
+middlewares.py                                                              100% 3607   732.5KB/s   00:00    
+settings.py                                                                 100% 3162   561.6KB/s   00:00    
+items.py                                                                    100%  314     2.0KB/s   00:00    
+pipelines.py                                                                100% 1119   302.5KB/s   00:00    
+profiles_settings.xml                                                       100%  174    53.2KB/s   00:00    
+Project_Default.xml                                                         100%  432   119.7KB/s   00:00    
+vcs.xml                                                                     100%  183    49.3KB/s   00:00    
+.gitignore                                                                  100%   47    14.3KB/s   00:00    
+workspace.xml                                                               100% 3044   590.9KB/s   00:00    
+modules.xml                                                                 100%  276    35.8KB/s   00:00    
+misc.xml                                                                    100%  185    72.7KB/s   00:00    
+ynews_spider.iml                                                            100%  402   114.8KB/s   00:00 
 ```
 
 Raspberry Piではデータを受け取るDBにテーブルを作成しておきます。
 
 ```text
-CREATE DATABASE news;
-USE news;
+MariaDB [None]> CREATE DATABASE news;
+MariaDB [None]> USE news;
 
+MariaDB [news]> 
 CREATE TABLE ynews(news_id BIGINT(7) NOT NULL AUTO_INCREMENT,
                    title TEXT,
                    body TEXT,
@@ -530,6 +553,10 @@ cronを設定します。1時間ごとにクロールするように設定しま
 
 ```text
 pi@raspberrypi:~ $ crontab -e
+* */1 * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
+
+# 確認
+pi@raspberrypi:~ $ crontab -l
 * */1 * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
 ```
 
@@ -580,4 +607,12 @@ news_agency: 弁護士ドットコム
 少し見ずらいので、MySQL WorkBenchからクエリを発行した画面で確認しておきます。
 
 ![ynews\_crawl](.gitbook/assets/ynews_crawl.png)
+
+ログも出力されています。
+
+```text
+pi@raspberrypi:~ $  cd ~/Desktop/ynews_spider/
+pi@raspberrypi:~/Desktop/ynews_spider $ ls
+exec-error.log  scrapy.cfg  ynews_spider
+```
 
