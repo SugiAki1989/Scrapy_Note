@@ -577,3 +577,7 @@ news_agency: 弁護士ドットコム
 7 rows in set (0.000 sec)
 ```
 
+少し見ずらいので、MySQL WorkBenchからクエリを発行した画面で確認しておきます。
+
+![ynews\_crawl](.gitbook/assets/ynews_crawl.png)
+
