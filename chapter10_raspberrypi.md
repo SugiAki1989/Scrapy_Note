@@ -108,7 +108,7 @@ MariaDB [mysql]> SELECT USER, HOST FROM mysql.user;
 
 cronの設定を行います。下記コンフィグファイルを開き、cronがコメントアウトされているので、`#`を削除してcronを使えるようにします。
 
-```text
+```bash
 pi@raspberrypi:~ $ sudo apt-get install vim
 pi@raspberrypi:~ $ sudo vim /etc/rsyslog.conf
 
@@ -120,7 +120,7 @@ pi@raspberrypi:~ $ sudo vim /etc/rsyslog.conf
 #
 auth,authpriv.*         /var/log/auth.log
 *.*;auth,authpriv.none      -/var/log/syslog
-#cron.*             /var/log/cron.log
+cron.*             /var/log/cron.log
 daemon.*            -/var/log/daemon.log
 kern.*              -/var/log/kern.log
 lpr.*               -/var/log/lpr.log
@@ -146,21 +146,21 @@ pi@raspberrypi:~ $ code-oss
 
 試しにデスクトップに`hello.py`を作成して実行してみます。
 
-```text
+```bash
 pi@raspberrypi:~ $ python3 ~/Desktop/hello.py
 Hello Python From VS CODE
 ```
 
 最後にSSHでログインできるか確認しておきます。まずは、下記の`ip addr`コマンドでipアドレスを調べ、ipアドレスが定期的に変動しないようにを固定します。
 
-```text
+```bash
 pi@raspberrypi:~ $ ip addr | grep 192
     inet ***.***.*.**/24 brd ***.***.*.** scope global dynamic noprefixroute wlan0
 ```
 
 `ip_address`の部分は固定した番号に変更してください。
 
-```text
+```bash
 pi@raspberrypi:~ sudo vim /etc/dhcpcd.conf
 
 # 下記を末尾に追加します。
@@ -185,7 +185,7 @@ $ sudo dhclient wlan0
 
 SSHでターミナルからログインします。
 
-```text
+```bash
 $ ssh pi@***.***.*.**
 pi@***.***.*.**'s password: 
 Linux raspberrypi 4.19.118-v7l+ #1311 SMP Mon Apr 27 14:26:42 BST 2020 armv7l
@@ -207,7 +207,7 @@ Raspbian GNU/Linux 10
 
 `-r`のオプションをつけるとディレクトリをコピーすることができます。ここでは、`crawl.py`を格納している`scrapy_scp`というディレクトリを丸ごと Raspberry Piのデスクトップに転送します。
 
-```text
+```bash
 ➜ scp -r ~/Desktop/scrapy_scp pi@***.***.*.**:~/Desktop/
 pi@***.***.*.**'s password: 
 crawl.py         100%    0     0.0KB/s   00:00 
@@ -215,7 +215,7 @@ crawl.py         100%    0     0.0KB/s   00:00
 
 Raspberry Pi側で確認しておきます。デスクトップに`scrapy_scp`というディレクトリが作られ、`crawl.py`も保存されています。
 
-```text
+```bash
 pi@raspberrypi:~ $ tree ~/Desktop/scrapy_scp/
 /home/pi/Desktop/scrapy_scp/
 └── crawl.py
@@ -223,7 +223,7 @@ pi@raspberrypi:~ $ tree ~/Desktop/scrapy_scp/
 
 反対にRaspberry Piのデータをもらう場合は下記のように書きます。ここでは、Raspberry PiのDesktopにある`excute.log`というデータをローカルのデスクトップに転送する例です。
 
-```text
+```bash
 $ scp pi@***.***.*.**:~/Desktop/execute.log ~/Desktop/
 ```
 
@@ -233,7 +233,7 @@ $ scp pi@***.***.*.**:~/Desktop/execute.log ~/Desktop/
 
 再起動後はCLIになります。戻すためには下記の通り設定します。
 
-```text
+```bash
 $ sudo raspi-config
 
 3 Boot Options
@@ -252,7 +252,7 @@ $ sudo raspi-config
 
 データベースにテストでインサートできるかを確認しておく。まずはデータベースにログインし、下記の通り、テスト用のテーブルを先程作成した`test_db`の中に作成します。
 
-```text
+```sql
 pi@raspberrypi:~ $ mysql -u user01 -p
 Enter password: ****
 
@@ -280,7 +280,7 @@ MariaDB [test_db]> show tables;
 
 下記のテストインサート用のコード`test_insert.py`を利用します。`pymysql`でMariaDBは操作できるので、これまでの内容と合わせるために、`pymysql`を利用します。
 
-```text
+```python
 import datetime
 import pymysql
 
@@ -324,7 +324,7 @@ if __name__ == "__main__":
 
 とりあえずデスクトップに保存し、インサートを実行します。問題なく`test`テーブルにインサートが行われています。
 
-```text
+```sql
 pi@raspberrypi:~ $ python3 ~/Desktop/test_insert.py
 Elapsed Time:0:00:00.009876
 
@@ -362,14 +362,14 @@ echo $str
 
 次はcronの設定です。ここではデスクトップにファイルを保存して、1分毎にログを出力するようにします。
 
-```text
+```bash
 pi@raspberrypi:~ $ crontab -l
 */1 * * * * bash ~/Desktop/heat.sh >> ~/Desktop/execute.log 2>&1
 ```
 
 数分ほど放置しておいたあとでログファイルを見てみると、cronは問題なく動いていることがわかります。
 
-```text
+```bash
 pi@raspberrypi:~ $ cat ~/Desktop/execute.log 
 06/09 11:44 temp=45.0'C
 06/09 11:45 temp=44.0'C
@@ -396,7 +396,7 @@ pi@raspberrypi:~ $ cat ~/Desktop/execute.log
 
 ここではローカルで作業したものをRaspberry Piに転送することにします。いつものようにプロジェクトを作成するところからはじめます。
 
-```text
+```bash
 $ scrapy startproject ynews_spider
 $ cd ynews_spider
 $ scrapy genspider yahoo_news_spider news.yahoo.co.jp
@@ -405,7 +405,7 @@ Created spider 'yahoo_news_spider' using template 'basic' in module:
 
 `items.py`では、記事のタイトル、本文、ニュースのID、報道局の名前を保存するためのフィールドを定義します。
 
-```text
+```python
 # -*- coding: utf-8 -*-
 import scrapy
 
@@ -417,9 +417,9 @@ class Headline(scrapy.Item):
     news_agency = scrapy.Field()
 ```
 
-`yahoo_news_spider.py`では、トップページ、ピックアップページ、アーティクルページの情報を抽出できるようにコードを書いておきます。
+`yahoo_news_spider.py`では、トップページ、ピックアップページ、アーティクルページの情報を抽出できるようにコードを書いておきます。動画のニュースの場合は、HTMLの構造が変わるので、スクレイピングできないコードですが、ここでは不要なのでこのままにします。
 
-```text
+```python
 # -*- coding: utf-8 -*-
 from scrapy import Spider
 from scrapy.http import Request
@@ -463,7 +463,7 @@ class YahooNewsSpiderSpider(Spider):
 
 `pipelines.py`は、データベースへのコネクションや同じニュースをインサートしないように、ニュースIDを使って重複しているかを判定しています。新規の記事であれば、データベースにインサートしていきます。データベースへのコネクションはconfigparserライブラリを使って、ファイルの中から取得する方法のほうがセキュリティ的によろしいかと思います。
 
-```text
+```python
 # -*- coding: utf-8 -*-
 import pymysql
 
@@ -485,7 +485,7 @@ class MySQLPipeline:
         find_qry = "SELECT `news_id` FROM `ynews` WHERE `news_id` = %s"
         is_done = self.cursor.execute(find_qry, check_news_id)
 
-        # if already a record exists in database, return 1
+        # if already news exists in database, return 1
         if is_done == 0:
             insert_qry = "INSERT INTO `ynews` (`title`, `body`, `news_id`, `news_agency`) VALUES (%s, %s, %s, %s)"
             self.cursor.execute(insert_qry, (item["title"], item["body"], item["news_id"], item["news_agency"]))
@@ -499,9 +499,9 @@ class MySQLPipeline:
         self.connection.close()
 ```
 
-`settings.py`では、データベースへのパイプラインを機能させる設定とFEED\_EXPORT\_ENCODINGの設定を行います。FEED\_EXPORT\_ENCODINGを設定しておかないと日本語の文字が文字化けします。
+`settings.py`では、データベースへのパイプラインを機能させる設定と`FEED_EXPORT_ENCODING`の設定を行います。`FEED_EXPORT_ENCODING`を設定しておかないと日本語の文字が文字化けします。
 
-```text
+```python
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
@@ -515,7 +515,7 @@ FEED_EXPORT_ENCODING = 'utf-8'
 
 クローラーが完成したので、`scp`コマンドでクローラーのスクリプトを転送します。
 
-```text
+```bash
 $ scp -r ~/Documents/scrapy/ynews_spider pi@***.***.*.**:~/Desktop/
 scrapy.cfg                                                                  100%  267    91.6KB/s   00:00    
 yahoo_news_spider.py                                                        100% 1504   348.5KB/s   00:00    
@@ -541,14 +541,14 @@ misc.xml                                                                    100%
 ynews_spider.iml                                                            100%  402   114.8KB/s   00:00 
 ```
 
-Raspberry Piではデータを受け取るDBにテーブルを作成しておきます。
+Raspberry Piではデータを受け取るDB`news`に`ynews`テーブルを作成しておきます。
 
-```text
+```sql
 MariaDB [None]> CREATE DATABASE news;
 MariaDB [None]> USE news;
 
 MariaDB [news]> 
-CREATE TABLE ynews(news_id BIGINT(7) NOT NULL AUTO_INCREMENT,
+CREATE TABLE ynews(news_id INT NOT NULL AUTO_INCREMENT,
                    title TEXT,
                    body TEXT,
                    news_agency VARCHAR(50),
@@ -556,29 +556,20 @@ CREATE TABLE ynews(news_id BIGINT(7) NOT NULL AUTO_INCREMENT,
                    PRIMARY KEY(news_id));
 ```
 
-cronを設定します。6時間ごとにクロールするように設定します。cronの設定は、[crontab guru](https://crontab.guru/)で調べるのが簡単かもしれません。
+cronjobを設定します。まずはテストのため、1時間ごとにクロールするように設定します。cronの設定は、[crontab guru](https://crontab.guru/)で調べるのが簡単かもしれません。
 
-```text
+```bash
 pi@raspberrypi:~ $ crontab -e
-0 */6 * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
+0 */ * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
 
 # 確認
 pi@raspberrypi:~ $ crontab -l
-0 */6 * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
+0 */ * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
 ```
 
-時間になると下記のようにクローラーが実行されていることがわかります。
+時間になるとクローラーが実行されます。ターミナルに出力すると見づらいので、MySQL WorkBenchからクエリを発行した画面で確認しておきます。`NULL`は動画のニュースの場合です。ここでは不要なので、このままにしておきます。
 
-```text
-MariaDB [news]> select * from ynews \G
-
-
-7 rows in set (0.000 sec)
-```
-
-少し見ずらいので、MySQL WorkBenchからクエリを発行した画面で確認しておきます。
-
-
+![](.gitbook/assets/sukurnshotto-2020-06-11-215053png.png)
 
 ログも出力されています。
 
@@ -586,5 +577,12 @@ MariaDB [news]> select * from ynews \G
 pi@raspberrypi:~ $  cd ~/Desktop/ynews_spider/
 pi@raspberrypi:~/Desktop/ynews_spider $ ls
 exec-error.log  scrapy.cfg  ynews_spider
+```
+
+意図したように機能しているので、cronの設定を1時間ごとから6時間ごとに変更しておきます。
+
+```text
+pi@raspberrypi:~ $ crontab -e
+0 */6 * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
 ```
 
