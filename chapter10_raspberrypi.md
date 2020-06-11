@@ -75,7 +75,7 @@ $ sudo mysql_secure_installation
 
 とりあえずテスト用のDB`test_db`とテスト用のユーザー`user01`を作成します。
 
-```text
+```sql
 $ sudo mysql -u root -p
 password : ******
 
@@ -229,7 +229,7 @@ $ scp pi@***.***.*.**:~/Desktop/execute.log ~/Desktop/
 
 これ以降は環境にあわせて、Raspberry Piを設定してください。GUIからCUIに変更するには、「Raspberry Piマーク &gt; 設定 &gt; Raspberry Piの設定」と進み、「システム」からブートをCLIにしてから再起動します。
 
-![](.gitbook/assets/sukurnshotto-2020-06-08-184301png.png)
+![](.gitbook/assets/sukurnshotto-2020-06-11-212257png.png)
 
 再起動後はCLIになります。戻すためには下記の通り設定します。
 
@@ -390,7 +390,11 @@ pi@raspberrypi:~ $ cat ~/Desktop/execute.log
 
 ### Scrapyを実行する
 
-今回は、ヤフーニュースの記事を取得するクローラーを作成していきます。ここではローカルで作業したものをRaspberry Piに転送します。いつものようにプロジェクトを作成します。
+今回は、ヤフーニュースの記事を取得するクローラーを作成していきます。イメージは下記のような感じで、ヤフーニュースのトップの「主要タブ」のニュースのリンクからスタートして、ピックアップページでは「続きを読む」から中に入り、アーティクルのページにあるニュース本文を取得します。これを「主要タブ」のニュース数分繰り返します。
+
+![Image of Crawler](.gitbook/assets/img_f16c5fd2e43e-1.jpeg)
+
+ここではローカルで作業したものをRaspberry Piに転送することにします。いつものようにプロジェクトを作成するところからはじめます。
 
 ```text
 $ scrapy startproject ynews_spider
@@ -399,7 +403,7 @@ $ scrapy genspider yahoo_news_spider news.yahoo.co.jp
 Created spider 'yahoo_news_spider' using template 'basic' in module:
 ```
 
-`items.py`は
+`items.py`では、記事のタイトル、本文、ニュースのID、報道局の名前を保存するためのフィールドを定義します。
 
 ```text
 # -*- coding: utf-8 -*-
@@ -413,7 +417,7 @@ class Headline(scrapy.Item):
     news_agency = scrapy.Field()
 ```
 
-`yahoo_news_spider.py`は
+`yahoo_news_spider.py`では、トップページ、ピックアップページ、アーティクルページの情報を抽出できるようにコードを書いておきます。
 
 ```text
 # -*- coding: utf-8 -*-
@@ -457,7 +461,7 @@ class YahooNewsSpiderSpider(Spider):
         yield item
 ```
 
-`pipelines.py`は、
+`pipelines.py`は、データベースへのコネクションや同じニュースをインサートしないように、ニュースIDを使って重複しているかを判定しています。新規の記事であれば、データベースにインサートしていきます。データベースへのコネクションはconfigparserライブラリを使って、ファイルの中から取得する方法のほうがセキュリティ的によろしいかと思います。
 
 ```text
 # -*- coding: utf-8 -*-
@@ -493,10 +497,9 @@ class MySQLPipeline:
 
     def close_spider(self, spider):
         self.connection.close()
-
 ```
 
-`settings.py`は
+`settings.py`では、データベースへのパイプラインを機能させる設定とFEED\_EXPORT\_ENCODINGの設定を行います。FEED\_EXPORT\_ENCODINGを設定しておかないと日本語の文字が文字化けします。
 
 ```text
 # Configure item pipelines
@@ -510,7 +513,7 @@ ITEM_PIPELINES = {
 FEED_EXPORT_ENCODING = 'utf-8'
 ```
 
-`scp`コマンドでクローラーのスクリプトを転送します。
+クローラーが完成したので、`scp`コマンドでクローラーのスクリプトを転送します。
 
 ```text
 $ scp -r ~/Documents/scrapy/ynews_spider pi@***.***.*.**:~/Desktop/
