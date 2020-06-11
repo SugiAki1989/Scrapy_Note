@@ -97,7 +97,7 @@ Itempipelineの設定もsettings.pyで行います。
 
 ### DEFAULT\_REQUEST\_HEADER
 
-基本的にはデフォルトの設定で問題ない。
+基本的にはデフォルトの設定で問題ないと思われます。
 
 ```text
 # Override the default request headers:
