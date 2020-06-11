@@ -553,15 +553,15 @@ CREATE TABLE ynews(news_id BIGINT(7) NOT NULL AUTO_INCREMENT,
                    PRIMARY KEY(news_id));
 ```
 
-cronを設定します。1時間ごとにクロールするように設定します。
+cronを設定します。1時間ごとにクロールするように設定します。cronの設定は、[crontab guru](https://crontab.guru/)で調べるのが簡単かもしれません。
 
 ```text
 pi@raspberrypi:~ $ crontab -e
-* */1 * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
+0 */1 * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
 
 # 確認
 pi@raspberrypi:~ $ crontab -l
-* */1 * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
+0 */1 * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
 ```
 
 時間になると下記のようにクローラーが実行されていることがわかります。
