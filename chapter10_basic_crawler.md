@@ -74,7 +74,7 @@ import lxml.html
 import pprint
 
 def main():
-    start_url = 'http://books.toscrape.com/catalogue/page-49.html'
+    start_url = 'http://books.toscrape.com/catalogue/page-49.html' # テストのためpage49から
     books_urls = book_link_extractor(start_url)
     pprint.pprint(books_urls)
 
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     main()
 ```
 
-実行結果を確認するために49ページと50ページの書籍URLを取得します。合計で40個のリンクが返ってくるはずです。
+クローラーが想定通りに、動くかどうかテストしてみます。ここでは、49ページと50ページの書籍URLを取得します。合計で40個のリンクが返ってきているので、問題ないですね。
 
 ```python
 $ python3 books_crawler2.py 
@@ -130,9 +130,9 @@ $ python3 books_crawler2.py
 
 ### 詳細ページから情報を抽出
 
-ここまでで、各ページの書籍URLが抽出できる状態になったので、そのURLからHTTPリクエストを送り、書籍の詳細ページから情報を抽出します。
+各ページの書籍URLを抽出できる状態になったので、そのURLを使ってHTTPリクエストを送り、書籍の詳細ページから情報を抽出します。
 
-詳細ページの情報は`scrape()`で行い、タイトルを抽出することにします。説明は不要かと思いますが、HTTPリクエストを送り、詳細ページからタイトルを抽出します。
+詳細ページの情報は`scrape()`で行い、ここでは書籍のタイトルを抽出することにします。この関数の説明は不要かと思いますが、ざっくりと説明するとHTTPリクエストを送り、詳細ページからタイトルを抽出する関数です。
 
 ```python
 import requests
@@ -203,9 +203,9 @@ if __name__ == '__main__':
  {'title': '1,000 Places to See Before You Die'}]
 ```
 
-### データベースに保存
+### MySQLに情報を保存
 
-最後はデータベースに保存する`save()`を新たに作って、クローラーを走らせます。まずはデータベースscrapingにテーブル`books`を作成します。
+最後はデータベースに保存する`save()`を新たに作って、クローラーを走らせます。まずは、データベース`scraping`にテーブル`books`を作成します。MySQLにインサートする方法は第7章で扱っているので、詳細はそちらを参照ください。
 
 ```python
 mysql> create database scraping default character set utf8mb4;
@@ -345,7 +345,7 @@ mysql> select count(1) from books;
 
 ```
 
-っっっｋ
+ここまでScrapyを使わずクローラーを作ってみましたが、ここからさらに、ScrapyのSettingsの内容を実装するとなると、考えるだけでも大変ですし、Scrapyのありがたみがわかりますね。
 
 
 
