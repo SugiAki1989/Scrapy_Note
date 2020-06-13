@@ -10,6 +10,7 @@
 * [第7章　ScrapyとMySQL](chapter07_mysql.md)
 * [第8章　ScrapyとHTTP](chapter08_http.md)
 * [第9章　Scrapyのスケジュール](chapter09_schedule.md)
-* [第10章 ScrapyとRaspberry Pi](chapter10_raspberrypi.md)
-* [第11章 Scrapyを使わずクローラーを作る](chapter10_basic_crawler.md)
+* [第10章　ScrapyとRaspberry Pi](chapter10_raspberrypi.md)
+* [第11章　Scrapyを使わずクローラーを作る](chapter11_basic_crawler.md)
+* [第12章　Scrapy Tutorial3](chapter12_tutorial03.md)
 

@@ -1,4 +1,4 @@
-# 第10章 ScrapyとRaspberry Pi
+# 第10章　ScrapyとRaspberry Pi
 
 ## はじめに
 
