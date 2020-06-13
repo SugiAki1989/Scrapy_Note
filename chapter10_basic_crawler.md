@@ -60,13 +60,13 @@ $ python3 books_crawler.py
  'catalogue/its-only-the-himalayas_981/index.html']
 ```
 
-このままでは、50ページあるサイトの各書籍のURLを取得できていないので、改良していきます。
+このままでは、50ページあるサイトの各書籍のURLを取得できていないので、改良していきましょう。
 
 ### 複数ページから書籍URLを抽出
 
-複数ページから書籍のURLを抽出できるようにループを回して、ページを進めていきます。
+複数ページから書籍のURLを抽出できるようにループを回して、ページを進めていきます。もちろんURLのページ番号を`for-loop`で回す方法でも良いのですが、ここでは各ページに「次ページ」へのボタンがあるかどうかを判断してクローラーを進めていきます。
 
-ここでは新たに`nextpage_link_extractor()`と少し改良した`book_link_extractor()`を定義しています。`nextpage_link_extractor()`は、引き受けたHTMLにNextページへのリンクがあるかを判定します。この関数がページのURLを返す限り、各書籍のURLを抽出する`book_link_extractor()`は実行され続けます。
+そのため、ここでは新たに`nextpage_link_extractor()`と、少し改良した`book_link_extractor()`を定義しています。`nextpage_link_extractor()`は、引き受けたHTMLに「次ページ」へのリンクがあるかを判定します。この関数がページのURLを返す限り、各書籍のURLを抽出する`book_link_extractor()`は実行され続けるように`while-loop`を使用します。
 
 ```python
 import requests
