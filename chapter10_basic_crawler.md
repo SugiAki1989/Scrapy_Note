@@ -64,7 +64,7 @@ $ python3 books_crawler.py
 
 複数ページから書籍のURLを抽出できるようにループを回して、ページを進めていきます。
 
-ここでは新たに`nextpage_link_extractor()`と`book_link_extractor()`を定義しています。`nextpage_link_extractor()`は、
+ここでは新たに`nextpage_link_extractor()`と`book_link_extractor()`を定義しています。`nextpage_link_extractor()`は、引き受けたHTMLにNextページへのリンクがあるかを判定します。この関数がページのURLを返す限り、各書籍のURLを抽出する`book_link_extractor()`は実行され続けます。
 
 ```python
 import requests
