@@ -8,11 +8,13 @@
 
 * [Books to scrape](http://books.toscrape.com/)
 
+単一のページからURLを取得し、それを拡張して複数ページのURLを取得。そして、詳細ページの情報を抽出し、MySQLに保存するまで、段階を追ってクローラーを作成していきます。
+
 ### 単一ページから書籍URLを抽出
 
-段階を追ってクローラーを作成していきます。まずはTOPページから書籍の詳細ページへのURLを抽出するコードを書いていきます。ファイル名は`books_crawler.py`とします。
+まずはTOPページから書籍の詳細ページへのURLを抽出するコードを書いていきます。ファイル名は`books_crawler.py`とします。基本的には、おのおの役割を持つ関数を作って、それを`main()`で実行します。
 
-`fetch()`はURLを引き受けて、HTMLを返します。そして、`book_link_extractor()`が各書籍のURLを返します。
+`fetch()`はURLを引き受けてHTTPリクエストを送り、HTTPレスポンスを受け取って、HTMLを返します。そして、`book_link_extractor()`にHTMLを渡して、各書籍のURLを取得します。
 
 ```python
 import requests
@@ -298,7 +300,22 @@ if __name__ == '__main__':
     main()
 ```
 
-スタートするページを1ページに戻し、50ページまでクローラーを走らせます。これを実行すると、下記のようにMySQLのテーブルに1000冊分の書籍のタイトル情報がインサートされます。
+スタートするページを1ページ目に戻し、最後の50ページまでクローラーを走らせます。これを実行すると、下記のようにMySQLのテーブルに1000冊分の書籍のタイトル情報がインサートされます。
+
+```python
+$ python3 books_crawler.py 
+[START]: 2020年06月13日 17:46:49
+[Insert]:A Light in the Attic
+[Insert]:Tipping the Velvet
+[Insert]:Soumission
+【略】
+[Insert]:A Spy's Devotion (The Regency Spies of London #1)
+[Insert]:1st to Die (Women's Murder Club #1)
+[Insert]:1,000 Places to See Before You Die
+[END]: 2020年06月13日 17:58:14
+```
+
+MySQLのテーブルも確認しておきます。1000件全ての書籍タイトルが取得できています。
 
 ```python
 mysql> select * from books limit 10;
