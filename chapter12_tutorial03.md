@@ -95,5 +95,37 @@ $ cat item.json
 
 ### 画像をスクレイピング
 
+次は画像をスクレイピングしていきます。対象のサイトは、これまでも使ってきた架空のオンライン書店のサイトです。このサイトの下記書籍のタイトル画像を取得します。
 
+* [Books to scrape](http://books.toscrape.com/)
+
+```python
+$ scrapy startproject image_spider
+$ cd image_spider
+$ scrapy genspider books books.toscrape.com
+```
+
+まずは`settings.py`の内容を変更していきます。`ITEM_PIPELINES`と`IMAGES_STORE`を追加します。`ITEM_PIPELINES`の`ImagesPipeline`は画像を扱えるようにするための設定です。`IMAGES_STORE`は画像の保存先を指定します。詳細は[ドキュメント](https://doc-ja-scrapy.readthedocs.io/ja/latest/topics/media-pipeline.html)を参照ください。
+
+```python
+ITEM_PIPELINES = {
+   'scrapy.pipelines.images.ImagesPipeline': 1,
+   'image_spider.pipelines.BooksCrawlerPipeline': 2
+}
+IMAGES_STORE = '/Users/aki/Desktop/scrapy/image_spider/imgs'
+```
+
+`Items.py`には、タイトル、URL、画像を受け取れるようにしておきます。タイトルを取得するのは、ダウンロードした画像の名前をタイトルで変更するためです。
+
+```python
+import scrapy
+
+
+class ImageSpiderItem(scrapy.Item):
+    title = scrapy.Field()
+    image_urls = scrapy.Field()
+    images = scrapy.Field()
+```
+
+`Items.py`では、[`ItemLoader()`](https://docs.scrapy.org/en/latest/topics/loaders.html)をインスタンス化し、URLやタイトルをスクレイピングします。そして、スクレイピングした値を[`ItemLoader()`](https://docs.scrapy.org/en/latest/topics/loaders.html)に`add_value()`で渡します。
 
