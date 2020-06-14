@@ -105,7 +105,7 @@ $ cd image_spider
 $ scrapy genspider books books.toscrape.com
 ```
 
-まずは`settings.py`の内容を変更していきます。`ITEM_PIPELINES`と`IMAGES_STORE`を追加します。`ITEM_PIPELINES`の`ImagesPipeline`は画像を扱えるようにするための設定です。`IMAGES_STORE`は画像の保存先を指定します。詳細は[ドキュメント](https://doc-ja-scrapy.readthedocs.io/ja/latest/topics/media-pipeline.html)を参照ください。
+まずは`settings.py`の内容を変更していきます。`ITEM_PIPELINES`と`IMAGES_STORE`を追加します。`ITEM_PIPELINES`の`ImagesPipeline`は画像を扱えるようにするための設定です。`IMAGES_STORE`は画像の保存先を指定します。詳細は[ドキュメント](https://doc-ja-scrapy.readthedocs.io/ja/latest/topics/media-pipeline.html)を参照ください。ここではデスクトップに画像をダウンロードするようにしています。
 
 ```python
 ITEM_PIPELINES = {
@@ -127,5 +127,103 @@ class ImageSpiderItem(scrapy.Item):
     images = scrapy.Field()
 ```
 
-`Items.py`では、[`ItemLoader()`](https://docs.scrapy.org/en/latest/topics/loaders.html)をインスタンス化し、URLやタイトルをスクレイピングします。そして、スクレイピングした値を[`ItemLoader()`](https://docs.scrapy.org/en/latest/topics/loaders.html)に`add_value()`で渡します。
+`books.py`では、[`ItemLoader()`](https://docs.scrapy.org/en/latest/topics/loaders.html)をインスタンス化し、URLやタイトルをスクレイピングします。そして、スクレイピングした値を[`ItemLoader()`](https://docs.scrapy.org/en/latest/topics/loaders.html)に`add_value()`で渡します。
+
+```python
+from scrapy import Spider
+from scrapy.http import Request
+from scrapy.loader import ItemLoader
+from image_spider.items import ImageSpiderItem
+
+
+class BooksSpider(Spider):
+    name = 'books'
+    allowed_domains = ['books.toscrape.com']
+    start_urls = ['http://books.toscrape.com']
+
+    def parse(self, response):
+        books = response.xpath('//h3/a/@href').extract()
+        for book in books:
+            absolute_url = response.urljoin(book)
+            yield Request(absolute_url, callback=self.parse_book)
+
+        # ここでは1ページの画像だけをスクレイピングする
+        # process next page
+        # next_page_url = response.xpath('//a[text()="next"]/@href').extract_first()
+        # if next_page_url is not None:
+        #     absolute_next_page_url = response.urljoin(next_page_url)
+        #     yield Request(absolute_next_page_url)
+
+    def parse_book(self, response):
+        l = ItemLoader(item=ImageSpiderItem(), response=response)
+
+        title = response.xpath('//h1/text()').extract_first()
+
+        image_urls = response.xpath('//img/@src').extract_first()
+        image_urls = image_urls.replace('../..', 'http://books.toscrape.com/')
+
+        l.add_value('title', title)
+        l.add_value('image_urls', image_urls)
+
+        return l.load_item()
+```
+
+`pipelines.py`では、ダウンロードされた画像がランダムな文字列になってしまうので、書籍のタイトルを使って、変更しています。
+
+```python
+import os
+
+class BooksCrawlerPipeline(object):
+    def process_item(self, item, spider):
+        os.chdir('/Users/aki/Desktop/scrapy/image_spider/imgs')
+
+        if item['images'][0]['path']:
+            new_image_name = item['title'][0] + '.jpg'
+            new_image_path = 'full/' + new_image_name
+
+            os.rename(item['images'][0]['path'], new_image_path)
+```
+
+アイテムはこのような形で返されるので、この情報をもとに上記の名前変更のパイプラインを定義しています。
+
+```python
+item = {
+ checksum: '4rfjewbfweg7hgbij3vu3rb',
+ path: 'full/sncjabvyuwlv24g2ybk',
+ title: 'Star in thr Sky'
+ }
+```
+
+クローラーを実行し、画像の保存先を確認します。このような形でjpgの画像データが保存されていることがわかります。
+
+```python
+$ scrapy crawl books
+2020-06-14 14:18:05 [scrapy.utils.log] INFO: Scrapy 2.0.1 started (bot: image_spider)
+【略】
+2020-06-14 14:20:09 [scrapy.core.engine] INFO: Spider closed (finished)
+
+$ ls /Users/aki/Desktop/scrapy/image_spider/imgs/full
+A Light in the Attic.jpg
+It's Only the Himalayas.jpg
+Libertarianism for Beginners.jpg
+Mesaerion: The Best Science Fiction Stories 1800-1849.jpg
+Olio.jpg
+Our Band Could Be Your Life: Scenes from the American Indie Underground, 1981-1991.jpg
+Rip it Up and Start Again.jpg
+Sapiens: A Brief History of Humankind.jpg
+Scott Pilgrim's Precious Little Life (Scott Pilgrim #1).jpg
+Set Me Free.jpg
+Shakespeare's Sonnets.jpg
+Sharp Objects.jpg
+Soumission.jpg
+Starving Hearts (Triangular Trade Trilogy, #1).jpg
+The Black Maria.jpg
+The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics.jpg
+The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull.jpg
+The Dirty Little Secrets of Getting Your Dream Job.jpg
+The Requiem Red.jpg
+Tipping the Velvet.jpg
+```
+
+このようにScrapyは画像のダウンロードもできるので、収集したデータを使って画像の機械学習モデルを作るのにも非常に便利です。画像の著作権には気をつける必要がありますが、openCVと掛け合わせて、ダウンロードした画像が人の画像なのかを判定したりもできるようです。
 
