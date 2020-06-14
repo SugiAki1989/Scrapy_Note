@@ -11,8 +11,9 @@
 * [第8章　ScrapyとHTTP](chapter08_http.md)
 * [第9章　Scrapyのスケジュール](chapter09_schedule.md)
 * [第10章　ScrapyとRaspberry Pi](chapter10_raspberrypi.md)
-* [第11章　Scrapyを使わずクローラーを作る](chapter11_basic_crawler.md)
-* [第12章　Scrapy Tutorial3](chapter12_tutorial03.md)
-* [第13章　ScrapyとJavaScript](chapter13_javascript.md)
-* [補章01　ScrapyとMongoDB](supplement_mongodb.md)
+* [第11章　Scrapy Tutorial3](chapter11_tutorial03.md)
+* [第12章　ScrapyとJavaScript](chapter12_javascript.md)
+* [補章1　Pythonとクローラー](supplement01_crawler.md)
+* [補章2　R言語とクローラー](supplement02_r_crawler.md)
+* [補章3　ScrapyとMongoDB](supplement03_mongodb.md)
 
