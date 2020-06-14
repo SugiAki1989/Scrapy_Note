@@ -13,4 +13,6 @@
 * [第10章　ScrapyとRaspberry Pi](chapter10_raspberrypi.md)
 * [第11章　Scrapyを使わずクローラーを作る](chapter11_basic_crawler.md)
 * [第12章　Scrapy Tutorial3](chapter12_tutorial03.md)
+* [第13章　ScrapyとJavaScript](chapter13_javascript.md)
+* [補章01　ScrapyとMongoDB](supplement_mongodb.md)
 
