@@ -10,13 +10,58 @@
 
 ![Image of tabelog](.gitbook/assets/sukurnshotto-2020-06-16-231401png.png)
 
-まずは必要なライブラリを読み込みます。ここでは`base`ではなく`tidyverse`の関数を中心にコードを組み立てます。加えて、Beautiful Soupをベースにしている`rvest`と`xml2`パッケージを読み込みます。`後で使うl`れるため、直接呼び出すことができます。ただし、それは確実に存在し`xml2`、この関数を`::`名前空間構文で使用する場合は、存在する場所から呼び出す必要があります。`xml2::read_html`
+まずは必要なライブラリを読み込みます。ここでは`base`ではなく`tidyverse`の関数を中心にコードを組み立てます。加えて、Beautiful Soupをベースにしている`rvest`を読み込みます。
 
 ```text
-pacman::p_load(tidyverse, rvest, xml2)
+pacman::p_load(tidyverse, rvest)
 ```
 
-まずは店名一覧のページから店舗の詳細ページへのURLとクローラーを次のページにすすめるかどうかの判定関数を作る。ページ番号とURLを結合してHTMLパーサーにわたす方法をここではやってない。理由は大阪エリアの店舗情報のページ数がわからないので、数字を渡せない・・・なので、次のページURLがあれば次のページに進むようにしている。
+セッションインフォも載せておきます。
+
+```text
+> sessionInfo()
+R version 3.6.3 (2020-02-29)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS Catalina 10.15.5
+
+Matrix products: default
+BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+
+locale:
+  [1] ja_JP.UTF-8/ja_JP.UTF-8/ja_JP.UTF-8/C/ja_JP.UTF-8/ja_JP.UTF-8
+
+attached base packages:
+  [1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+  [1] rvest_0.3.5     xml2_1.3.1      forcats_0.5.0   stringr_1.4.0   dplyr_1.0.0    
+[6] purrr_0.3.3     readr_1.3.1     tidyr_1.0.2     tibble_3.0.0    ggplot2_3.3.0  
+[11] tidyverse_1.3.0
+
+loaded via a namespace (and not attached):
+[1] Rcpp_1.0.4.6     cellranger_1.1.0 pillar_1.4.3     compiler_3.6.3  
+[5] dbplyr_1.4.4     tools_3.6.3      lubridate_1.7.8  jsonlite_1.6.1  
+[9] lifecycle_0.2.0  nlme_3.1-144     gtable_0.3.0     lattice_0.20-38 
+[13] pkgconfig_2.0.3  rlang_0.4.6      reprex_0.3.0     DBI_1.1.0       
+[17] cli_2.0.2        rstudioapi_0.11  haven_2.2.0      withr_2.2.0     
+[21] httr_1.4.1       fs_1.4.1         generics_0.0.2   vctrs_0.3.0     
+[25] hms_0.5.3        grid_3.6.3       tidyselect_1.1.0 glue_1.4.1      
+[29] R6_2.4.1         fansi_0.4.1      readxl_1.3.1     modelr_0.1.6    
+[33] blob_1.2.1       magrittr_1.5     backports_1.1.6  scales_1.1.0    
+[37] ellipsis_0.3.0   assertthat_0.2.1 colorspace_1.4-1 stringi_1.4.6   
+[41] munsell_0.5.0    broom_0.5.5      crayon_1.3.4  
+```
+
+### 各店舗のURLの取得
+
+まずは店名一覧のページから店舗の詳細ページへのURLと、クローラーを次のページ進めるかどうかを判定する関数を作ります。もちろん、ページ番号とURLを結合して、リクエストを送る方法でもかまいません。
+
+ですが、ページネーションの部分をみると71751店舗あるようなので、1ページに20店舗なので、3588回ページをループさせるコードを書くと、途中でエラーが返されます。その理由は下記の通り、60ページ目以降は表示されないので、1200店舗のURLしか取得できません。
+
+![Limitation](.gitbook/assets/sukurnshotto-2020-06-16-231505png.png)
+
+上限ページ数がわかったので、その番号をもとにURLを作ってループさせる方法でも良いですが、ここでは次のページのURLがあれば、次のページに進むようにしています。
 
 ```text
 list_url_parse <- function(html){
@@ -37,7 +82,7 @@ is_next_url <- function(html){
 }
 ```
 
-先程の関数を使って、ページのURL一覧を取得する関数を作る。`Sys.sleep(10)`多めに10秒いれている。
+さきほど作った関数たちを使って、ページのURL一覧を取得する関数を作ります。ここでは、サーバーに負荷がかからないように、`Sys.sleep(10)`として、スリープを10秒いれています。
 
 ```text
 get_urls <- function(start_url) {
@@ -61,7 +106,7 @@ get_urls <- function(start_url) {
 }
 ```
 
-食べログの1ページをスタートURLに指定し、ページがある分クローラーを走らせる。ログを見る限り60ページあったので、1枚20URLだとすると1200URLあれば問題ない。ログとかもglueパッケージを使ったほうがよさそう。
+食べログの1ページ目をスタートURLに指定し、ページがある分クローラーを走らせます。ログを出力するように関数を作っているので、実行すれば、ログが出力されます。1枚20店舗のURLが取得できるので、合計で1200URLあれば問題なく取得できていることになります。
 
 ```text
 start_url <- "https://tabelog.com/osaka/rstLst/1"
@@ -76,6 +121,7 @@ Log: 2020-06-07 03:08:46 https://tabelog.com/osaka/rstLst/60/
 Log: 2020-06-07 03:08:58  
 Log: End
 
+# １２００個のURLが取得できている
 df %>% 
   dplyr::count()
 # A tibble: 1 x 1
@@ -83,12 +129,15 @@ df %>%
   <int>
 1  1200
 
+# 重複URLもなし
 df %>% 
   dplyr::n_distinct()
 [1] 1200
 ```
 
-これで大阪エリアのURLの一覧が手に入ったので、このURLを使って、詳細ページの情報を抽出する。ここでは、店名、住所、電話番号を取得する関数を作る。
+### 店舗の詳細ページから店舗情報を取得
+
+ここまでの作業で、大阪エリアのURLの一覧が手に入ったので、このURLを使って、詳細ページの情報を抽出する。ここでは、店名、住所、電話番号を取得する関数を作る。
 
 ```text
 page_url_parse <- function(url){
