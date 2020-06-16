@@ -2,7 +2,7 @@
 
 ## はじめに
 
-ここではScrapyの3つ目のチュートリアルとして、HTMLテーブルからのスクレイピング、画像のスクレイピングなどを行います。
+ここではScrapyの3つ目のチュートリアルとして、HTMLテーブルからのスクレイピング、画像のスクレイピング、JSONデータのスクレイピングなどを行います。
 
 ### テーブルをスクレイピング
 
@@ -226,4 +226,71 @@ Tipping the Velvet.jpg
 ```
 
 このようにScrapyは画像のダウンロードもできるので、収集したデータを使って画像の機械学習モデルを作るのにも非常に便利です。画像の著作権には気をつける必要がありますが、openCVと掛け合わせて、ダウンロードした画像が人の画像なのかを判定したりもできるようです。
+
+### JSONをスクレイピング
+
+スクレイピングしていると、値の表示をJSONを呼び出して表示するようなサイトがあったりします。例えば、ECサイトに掲載している商品の金額を、通貨ごとに出し分けるために、JSONから金額を呼び出して表示するサイトなどです。この場合、参照もとのJSONにリクエストを送って、JSONのレスポンスを受け取り、そこから値をスクレイピングすることになります。一見面倒くさそうに見えますが、JSONであれば値も取得しやすいので、面倒くさいことはありません。ライブラリの[JSON](https://docs.python.org/ja/3/library/json.html)を使えば簡単に値を取り出せます。
+
+リクエストを送って返ってきたのが下記のようなJSONだったとします。
+
+```python
+import json
+data = '''
+{
+    "pId": 20023798,
+    "pCode": "1686906",
+    "pPrice": {
+        "current": {
+            "value": 158,
+            "text": "¥158",
+            "versionId": "REGP000002000100098793260000166981"
+        },
+        "pre": {
+            "value": 190,
+            "text": "¥190",
+            "versionId": "REGP000002000100098793260000166981"
+        },
+        "currency": "USD",
+        "isMarkedDown": false,
+        "isOutletPrice": false,
+        "startDateTime": "2020-01-20T10:07:35Z"
+    }
+}'''
+```
+
+JSONとして扱うために、`loads()`で読み込みます。
+
+```python
+data_json = json.loads(data)
+```
+
+JSONから値を取り出すには、キーを指定すればよいのので、幾つか試しに値を取得するとこうなります。
+
+```python
+data_json = json.loads(data)
+data_json["pId"]
+20023798
+
+data_json["pPrice"]["current"]["text"]
+'¥158'
+
+data_json["pPrice"]["currency"]
+'USD'
+```
+
+実際には、JSONが返ってきたら、必要であれば`decode()`でバイト列の内容をデコードしてJSONに変換し、キーを指定して、値をスクレイピングすることになります。
+
+```python
+def parse_price(self, response):
+    jsonresponse = json.loads(response.body.decode('utf-8'))
+    price = jsonresponse["pPrice"]["current"]["text"]
+
+    yield {
+        "price" : price
+    }
+```
+
+
+
+
 
