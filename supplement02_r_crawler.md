@@ -2,7 +2,7 @@
 
 ## はじめに
 
-ここでは、R言語を用いて、簡単なスクレイピングのコードを作成します。データ分析言語と言えば、R、Python…最近だとJuliaなどだと思うので、本章ではPythonのScrapyを中心に内容を扱ってきたので、補章では、Rでのクローラー作成方法も紹介しておきます。
+ここでは、R言語を用いて、簡単なスクレイピングのコードを作成します。データ分析言語と言えば、R、Python…最近だとJuliaなどだと思うので、本章ではPythonのScrapyを中心に内容を扱ってきたので、補章では、Rでのクローラー作成方法も紹介しておきます。サイトの情報をスクレイピングし、その情報をMySQLに保存するまでを紹介します。
 
 ### 対象サイトとライブラリの読み込み
 
@@ -137,7 +137,7 @@ df %>%
 
 ### 店舗の詳細ページから店舗情報を取得
 
-ここまでの作業で、大阪エリアのURLの一覧が手に入ったので、このURLを使って、詳細ページの情報を抽出する。ここでは、店名、住所、電話番号を取得する関数を作る。
+ここまでの作業で、大阪エリアのURLの一覧が手に入ったので、このURLを渡す関数を作ります。この関数は、詳細ページの店名、住所、電話番号、緯度、経度を取得します。
 
 ```text
 page_url_parse <- function(url){
@@ -151,7 +151,7 @@ page_url_parse <- function(url){
     rvest::html_node(., xpath = "//*[@class = 'rstinfo-table__address']") %>% 
     rvest::html_text(trim = TRUE)
 
-  # 先に表示される店舗基本情の電話番号
+  # 先に表示される店舗の電話番号を取得
   phone <- detail_html %>%
     rvest::html_node(., xpath = "//*[@class = 'rstinfo-table__tel-num']") %>% 
     rvest::html_text(trim = TRUE)
@@ -172,7 +172,7 @@ page_url_parse <- function(url){
 }
 ```
 
-別にfor-loopでも良いが、ここでは`map()`を使う。
+もちろん`for-loop`でも良いのですが、ここでは`purrr::map()`を使います。`furrr`パッケージの`future_map()`を使うことで並列処理できますが、サーバーへの負担を考えて使用しません。この関数も実行するとログを出力するようにしているので、実行すると店舗の詳細情報が取得されていることがわかります。
 
 ```text
 df_osaka <- df %>% 
@@ -187,7 +187,7 @@ Log:{'name': 活さば問屋 , 'address': 大阪府大阪市北区堂山町5-4 A
 Log:{'name': しゃかりき432" 堂山店 , 'address': 大阪府大阪市北区堂山町10-15 天神ビル 1F , 'phone': 050-5456-9194 , 'lat': 34.70337007924187 , 'long': 135.5045632762873 }…
 ```
 
-こんな感じで1200件の店舗情報が取得できている。
+実行が終わった後に結果を確認すると、1200件の店舗情報が取得できていることがわかります。
 
 ```text
 df_osaka
@@ -207,27 +207,37 @@ df_osaka
 # … with 1,190 more rows
 ```
 
-MySQLに放り込んでおく。
+### MySQLで情報を保存
+
+スクレイピングしたデータをMySQLにインサートして保存しておきます。まずは保存するためのデータベースをMySQLに作成します。ここでは`tabelog`データベースを作ります。
 
 ```text
 mysql> create database tabelog;
 Query OK, 1 row affected (0.00 sec)
+```
 
+`RMySQL`、`DBI`パッケージを読み込み、コネクションを作ったあとは、`dbWriteTable()`でインサートします。
+
+```text
+library(DBI)
 library(RMySQL)
 
 con <- dbConnect(
   drv = RMySQL::MySQL(),
   dbname = "tabelog",
-  user = "root",
-  password = "pass",
+  user = "****", 
+  password = "****",
   host = "localhost",
   port = 3306
 )
 
 dbWriteTable(con, "osaka_tbl", df_osaka)
 [1] TRUE
+```
 
+MySQL側でも確認しておきます。問題なく1200件の店舗情報が取得できています。
 
+```text
 mysql> select * from osaka_tbl limit 10;
 +-----------+---------------------------------------------------+----------------------------------------------------+-------------------------------------------------------------------+---------------+--------------------+--------------------+
 | row_names | urls                                              | name                                               | address                                                           | phone         | lat                | long               |
@@ -254,20 +264,9 @@ mysql> select count(1)  from osaka_tbl;
 1 row in set (0.00 sec)
 ```
 
-データベースに入れた値を読み出す際には注意が必要。そのままクエリを飛ばすと、文字化けが起こる。
+データベースに入れた値を読み出す際には注意が必要です。そのままクエリを飛ばすと、文字化けが起きてしまいます。
 
 ```text
-library(DBI)
-library(RMySQL)
-con <- dbConnect(
-   drv = RMySQL::MySQL(),
-  dbname = "tabelog",
-  user = "root",
-  password = "pass",
-  host = "localhost",
-  port = 3306
-)
-
 data1 <- dbGetQuery(con, "select * from osaka_tbl limit 5;")
 data1
   row_names                                              urls               name                       address
@@ -284,7 +283,7 @@ data1
 5 050-5869-6949 34.69616766207376 135.49700701322436
 ```
 
-なので、`dbGetQuery()`で文字コードをセットしてから読み込む。
+そのため、`dbGetQuery()`で文字コードをセットしてから読み込むことで、この問題は解消されます。
 
 ```text
 data <- dbGetQuery(con, "set names utf8") 
@@ -304,5 +303,5 @@ data
 5       大阪府大阪市北区堂島1-5-39 マルタビル 1F 050-5869-6949 34.69616766207376 135.49700701322436
 ```
 
-以上メモおわり。
+
 
