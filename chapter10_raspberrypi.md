@@ -17,6 +17,8 @@ pi@raspberrypi:~ $ scrapy -V
 Scrapy 1.5.1 - no active project
 ```
 
+お金さえあれば、AWSの製品とか、GCP製品で環境構築して常時稼働させて、クローラーを実行すればいいんだろうけど、そんなお金ないので、家に転がっていたRaspberry Piを使います。
+
 ### Raspberry Piのセットアップ
 
 ここで書く必要も無いかもしれませんが、まとめておきます。まずは購入したRaspberry Piにフォーマット済みのSDカードとRaspberry Pi Imagerを使って、Raspbianをインストールしていきます。RaspbianはLinuxのディストリビューションであるDebianをベースにしているOSなので、似たような操作感で操作ができます。
