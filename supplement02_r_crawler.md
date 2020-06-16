@@ -303,5 +303,7 @@ data
 5       大阪府大阪市北区堂島1-5-39 マルタビル 1F 050-5869-6949 34.69616766207376 135.49700701322436
 ```
 
+実際には、入力値のバリデーション関数やエラー処理のtry-catch、ログ出力などが改善する箇所は多いですが、R言語で作る簡単なクローラーの紹介はここで終わりです。
 
+他にも、R言語には、スクレイピングやクローラー作成に役立つパッケージとして、[polite](https://github.com/dmi3kno/polite)、[memoise](https://github.com/r-lib/memoise)、[RSelenium](https://github.com/ropensci/RSelenium)、[cronR](https://github.com/bnosac/cronR)などがありますので、これらを組みあわせることで、より負荷も少なく効率的なクローラーが作れるかと思います。
 
