@@ -6,9 +6,17 @@
 
 ### DockerとSplashのインストール
 
-SplashはWebKitがベースのヘッドレスブラウザを組み込んだサーバーです。ヘッドレスブラウザというのは、サーバ環境などでHTMLをレンダリングするためにバックグラウンドで動作させるブラウザなので、GUIの画面をありません。機械のためのブラウザというイメージでしょうか。
+SplashはWebKitがベースのヘッドレスブラウザを組み込んだサーバーです。ヘッドレスブラウザというのは、サーバ環境などでHTMLをレンダリングするためにバックグラウンドで動作させるブラウザなので、GUIの画面をありません。機械のためのブラウザというイメージでしょうか。Splashは下記のようなことができるようです。
 
-ここでは、公式の[ドキュメント](https://splash.readthedocs.io/en/stable/install.html#os-x-docker)に従ってDockerを利用した方法で行います。まずは、Dockerのアカウントを作ってログインし、DockerHubからDocker for Macをインストールします。
+* 複数のウェブページを並行して処理できる。 
+* HTML の結果を取得したり、スクリーンショットを撮影したりできる。 
+* 画像を読み込みをOFFにしたり、Adblock Plus ルールを使用してレンダリングを高速化できる。
+* ページコンテキストでカスタム JavaScript を実行できる。
+*  Lua ブラウジングスクリプトを書ける。 
+* Splash-Jupyter Notebooks で Splash Lua スクリプトを開発できる。 
+* レンダリングの詳細情報をHAR形式で取得できる。
+
+では、公式の[ドキュメント](https://splash.readthedocs.io/en/stable/install.html#os-x-docker)に従ってDockerを利用した方法で行います。まずは、Dockerのアカウントを作ってログインし、DockerHubからDocker for Macをインストールします。
 
 ```python
 $ docker version
@@ -41,7 +49,7 @@ Server: Docker Engine - Community
   GitCommit:        fec3683
 ```
 
-Docker hubに置かれているScrapinghub社の`scrapinghub/splash`イメージをプルして実行します。
+Docker hubに置かれているScrapinghub社の[`scrapinghub/splash`](https://hub.docker.com/r/scrapinghub/splash)イメージを`docker pull`コマンドでダウンロードします。`docker run`コマンドでコンテナを作って実行します。ポートの意味は下記のとおりです。5023がtelnet、8050がhttp、8051がhttpsです。
 
 ```python
 $ sudo docker pull scrapinghub/splash
