@@ -12,7 +12,7 @@ SplashはWebKitがベースのヘッドレスブラウザを組み込んだサ�
 * HTML の結果を取得したり、スクリーンショットを撮影したりできる。 
 * 画像を読み込みをOFFにしたり、Adblock Plus ルールを使用してレンダリングを高速化できる。
 * ページコンテキストでカスタム JavaScript を実行できる。
-*  Lua ブラウジングスクリプトを書ける。 
+*  Luaブラウジングスクリプトを書ける。 
 * Splash-Jupyter Notebooks で Splash Lua スクリプトを開発できる。 
 * レンダリングの詳細情報をHAR形式で取得できる。
 
@@ -67,17 +67,96 @@ QStandardPaths: XDG_RUNTIME_DIR not set, defaulting to '/tmp/runtime-splash'
 2020-06-20 03:05:50.403264 [-] Site starting on 8050
 2020-06-20 03:05:50.403699 [-] Starting factory <twisted.web.server.Site object at 0x7f675747b1d0>
 2020-06-20 03:05:50.404881 [-] Server listening on http://0.0.0.0:8050
+```
 
+`http://0.0.0.0:8050`にアクセスして、コンテナ内のサーバーが起動していることを確認します。
+
+![](.gitbook/assets/splash.png)
+
+Dockerのプロセスも確認しておきます。
+
+```python
+$ docker container ls
+CONTAINER ID        IMAGE                COMMAND                  CREATED             STATUS              PORTS                                                      NAMES
+b1ff5faed1ca        scrapinghub/splash   "python3 /app/bin/sp…"   3 hours ago         Up 3 hours          0.0.0.0:5023->5023/tcp, 0.0.0.0:8050-8051->8050-8051/tcp   amazing_zhukovsky
+```
+
+次は`scrapy_splash`をインストールします。
+
+```python
 $ sudo pip install scrapy_splash
 ```
 
-### Scrapy×Splash
+これで必要なものがインストールできました。
 
-偉人の名言サイトのJavaScript版ページを対象にします。このサイトの説明
+### Javascriptで動的に生成されるページ
 
-### Splashサンプルコード
+Scapye内でSplashを使用する場合、基本的には下記の順序で行います。
 
-プロジェクト
+1. `scrapy_splash`ライブラリをインストール
+2. Splashのサーバーを起動する\(Dockerコンテナ\)
+3. settings.pyに必要な情報を記載する
+4. SpiderでRequestクラスではなく、SplashRequestクラスを利用する。
+5. Luaスクリプトでブラウザを操作する
+
+ここでは、偉人の名言サイト"Quotes To Scrape"の[JavaScript版ページ](http://quotes.toscrape.com/js/)を対象にします。このサイトは、Webページ内にJavaScriptが仕込まれており、生のHTMLには名言は含まれていません。Webブラウザでページがレンダリングされたときに。JSON形式のデータオブジェクトを反復処理してDOMを作成することで、サイトに名言のブロックが作られる仕様になっています。そのため、Scrapyでそのままデータを抽出することはできません。
+
+```python
+<script src="/static/jquery.js"></script>
+<script>
+    var data = [
+    {
+        "tags": [
+            "change",
+            "deep-thoughts",
+            "thinking",
+            "world"
+        ],
+        "author": {
+            "name": "Albert Einstein",
+            "goodreads_link": "/author/show/9810.Albert_Einstein",
+            "slug": "Albert-Einstein"
+        },
+        "text": "\u201cThe world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\u201d"
+    },
+    
+    【略】
+    
+    {
+        "tags": [
+            "humor",
+            "obvious",
+            "simile"
+        ],
+        "author": {
+            "name": "Steve Martin",
+            "goodreads_link": "/author/show/7103.Steve_Martin",
+            "slug": "Steve-Martin"
+        },
+        "text": "\u201cA day without sunshine is like, you know, night.\u201d"
+    }
+];
+    for (var i in data) {
+        var d = data[i];
+        var tags = $.map(d['tags'], function(t) {
+            return "<a class='tag'>" + t + "</a>";
+        }).join(" ");
+        document.write("<div class='quote'><span class='text'>" + d['text'] + "</span><span>by <small class='author'>" + d['author']['name'] + "</small></span><div class='tags'>Tags: " + tags + "</div></div>");
+        }
+</script>
+```
+
+ほかにも下記のようなページもJavaScriptで動的にHTMLが生成されます。よく見るような[車の通販サイト](https://www.baierl.com/new-inventory/)です。このページでは左側のボックスにチェックを入れることで表示される車が変更されます。
+
+![](.gitbook/assets/baierl.png)
+
+例えば、2020年のFORDにチェックを入れると表示が変更されます。このようなページをスクレイピングしたいのであれば、Splashを使って、Luaスクリプトでブラウザを操作する必要があります。他の方法としては、リクエストするURLを書き換えれば、Splashを使わなくてもスクレイピングできます。
+
+![](.gitbook/assets/baierl_after.png)
+
+### Scrapy×Splashのサンプルコード
+
+まずはいつもどおりプロジェクト作成します。
 
 ```python
 ➜ scrapy startproject quotes_js
@@ -85,7 +164,7 @@ $ sudo pip install scrapy_splash
 ➜ scrapy genspider quotes_spider_js quotes.toscrape.com
 ```
 
-ここに
+`settings.py`にSplashの情報を追記します。
 
 ```text
 # Enable or disable downloader middlewares
@@ -102,7 +181,7 @@ DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
 HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 ```
 
-ここに
+クローラーのコードはこのようになります。いつもと違う点は、`scrapy_splash`ライブラリが呼ばれ、`SplashRequest()`が使用され、Luaスクリプトがある点です。ここでは、Luaスクリプトでなくてもページを移動できますが、サンプルとしてボタンをクリックするLuaスクリプトを記載しています。
 
 ```python
 # -*- coding: utf-8 -*-
@@ -154,7 +233,13 @@ class QuotesSpiderJsSpider(scrapy.Spider):
 
 ```
 
-100個分の名言が取得できています
+`SplashRequest()`の[`render.html`](https://splash.readthedocs.io/en/stable/api.html#render-html)はJavaScriptでレンダリングされたページのHTMLを返す設定です。Luaスクリプトについては[ドキュメント](https://splash.readthedocs.io/en/stable/scripting-overview.html)の詳細を確認してください。それではクローラーを実行していきましょう。
+
+```python
+$ scrapy crawl quotes_spider_js -o item_js.json
+```
+
+問題なく100個分の名言が取得できています。
 
 ```python
 ➜ cat item_js.json 
