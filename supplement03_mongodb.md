@@ -111,5 +111,18 @@ class QuotesSpiderJsSpider(scrapy.Spider):
 
 ```
 
+100個分の名言が取得できています
+
+```python
+➜ cat item_js.json 
+[
+{"author": "Albert Einstein", "quote": "\u201cThe world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\u201d"},
+{"author": "J.K. Rowling", "quote": "\u201cIt is our choices, Harry, that show what we truly are, far more than our abilities.\u201d"},
+【略】
+{"author": "Dr. Seuss", "quote": "\u201cA person's a person, no matter how small.\u201d"},
+{"author": "George R.R. Martin", "quote": "\u201c... a mind needs books as a sword needs a whetstone, if it is to keep its edge.\u201d"}
+]
+```
+
 
 
