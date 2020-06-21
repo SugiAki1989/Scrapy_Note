@@ -144,5 +144,134 @@ DISTRIB_CODENAME=focal
 DISTRIB_DESCRIPTION="Ubuntu 20.04 LTS"
 ```
 
-ああああ
+ここでイメージレイヤーについて少し補足をします。例えば、centOSのイメージでコンテナを作ると、このようにイメージレイヤーは1つ\(`6910e5a164f7`\)です。
+
+```text
+➜ docker run -it centos bash
+Unable to find image 'centos:latest' locally
+latest: Pulling from library/centos
+6910e5a164f7: Pull complete 
+Digest: sha256:4062bbdd1bb0801b0aa38e0f83dece70fb7a5e9bce223423a68de2d8b784b43b
+Status: Downloaded newer image for centos:latest
+
+[root@fcc850c3e81a /]# cat /etc/redhat-release
+CentOS Linux release 8.2.2004 (Core) 
+```
+
+ubuntuの場合は、`a4a2a29f9ba4`、`127c9761dcba`、`d13bf203e905`、`4039240d2e0b`の4つが取得されています。このイメージレイヤーを使ってコンテン内にubuntuを構築しています。
+
+そのため、何らかの修正を加えた場合、新しい5個目のイメージレイヤが追加されることになります。ルートディレクトリにテキストファイルを追加し、コンテナから抜けておきます。
+
+```text
+root@c4c6b6545289:/# ls
+bin  boot  dev  etc  home  lib  lib32  lib64  libx32  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+
+root@c4c6b6545289:/# echo "This is a sample text" > a_sample.txt
+root@c4c6b6545289:/# ls
+a_sample.txt  bin  boot  dev  etc  home  lib  lib32  lib64  libx32  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+
+root@c4c6b6545289:/# exit
+exit
+```
+
+再度コンテナに入り、先程のテキストファイルが残っているか確認します。ステータスがexitedの場合は、コンテナに入ることができないので、リスタート\(`docker restart <CONTAINER ID>`\)してから、コンテナIDを使って入ります\(`docker exec -it <CONTAINER ID> bash`\)。
+
+```text
+$ docker ps -a
+CONTAINER ID        IMAGE                COMMAND                  CREATED             STATUS                         PORTS               NAMES
+fcc850c3e81a        831691599b88         "bash"                   30 minutes ago      Exited (130) 8 minutes ago                         condescending_banzai
+c4c6b6545289        ubuntu               "bash"                   55 minutes ago      Exited (0) 36 seconds ago                          eloquent_bohr
+1b0497e57c41        scrapinghub/splash   "python3 /app/bin/sp…"   About an hour ago   Exited (0) About an hour ago                       boring_shtern
+c28ebaec5aeb        hello-world          "/hello"                 About an hour ago   Exited (0) About an hour ago                       crazy_wiles
+b1ff5faed1ca        scrapinghub/splash   "python3 /app/bin/sp…"   21 hours ago        Exited (0) 17 hours ago                            amazing_zhukovsky
+ 
+$ docker exec -it c4c6b6545289 bash
+Error response from daemon: Container c4c6b6545289d8b5cc2d6349eaa9ab39ca407ba811fb1116da41d9640a16c41b is not running
+ 
+$ docker restart c4c6b6545289
+c4c6b6545289
+ 
+$ docker exec -it c4c6b6545289 bash
+```
+
+さきほど作ったサンプルファイルは消えずに残っていることが確認できます。
+
+```text
+root@c4c6b6545289:/# ls
+a_sample.txt  bin  boot  dev  etc  home  lib  lib32  lib64  libx32  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+
+root@c4c6b6545289:/# cat a_sample.txt 
+This is a sample text
+```
+
+では更新されたコンテナをDockerファイル\(`docker commit <CONTAINER ID>`\)にしていきます。
+
+```text
+$ docker ps -a 
+CONTAINER ID        IMAGE                COMMAND                  CREATED             STATUS                         PORTS               NAMES
+fcc850c3e81a        831691599b88         "bash"                   40 minutes ago      Exited (130) 19 minutes ago                        condescending_banzai
+c4c6b6545289        ubuntu               "bash"                   About an hour ago   Up 4 minutes                                       eloquent_bohr
+1b0497e57c41        scrapinghub/splash   "python3 /app/bin/sp…"   About an hour ago   Exited (0) About an hour ago                       boring_shtern
+c28ebaec5aeb        hello-world          "/hello"                 About an hour ago   Exited (0) About an hour ago                       crazy_wiles
+b1ff5faed1ca        scrapinghub/splash   "python3 /app/bin/sp…"   21 hours ago        Exited (0) 17 hours ago                            amazing_zhukovsky
+ 
+$ docker commit c4c6b6545289 ubuntu:test_update
+sha256:a08a259e2ad0c475670dd1535e8d8a49188d1b994e12752aae284103ee30cc8b
+```
+
+Dockerイメージを確認します。新しいタグで先程コミットしたイメージが作られていることがわかります。
+
+```text
+$ docker images
+REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
+ubuntu               test_update         a08a259e2ad0        8 seconds ago       73.9MB
+ubuntu               latest              74435f89ab78        3 days ago          73.9MB
+scrapinghub/splash   latest              4ddd2efcb0df        5 months ago        2.17GB
+hello-world          latest              bf756fb1ae65        5 months ago        13.3kB
+```
+
+更新されたイメージをプッシュするためにタグ付けを行っておきます。
+
+```text
+$ docker tag ubuntu:test_update <repo_name>/test-repo
+ 
+$ docker images
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+ubuntu                  test_update         a08a259e2ad0        8 minutes ago       73.9MB
+<repo_name>/test-repo   latest              a08a259e2ad0        8 minutes ago       73.9MB
+ubuntu                  latest              74435f89ab78        3 days ago          73.9MB
+scrapinghub/splash      latest              4ddd2efcb0df        5 months ago        2.17GB
+hello-world             latest              bf756fb1ae65        5 months ago        13.3kB
+```
+
+タグ付けしたイメージをプッシュするには、リポジトリが必要です。このリポジトリをDocker Hubに作っておきます。Docker Hubの「Create a Repository」を押して、
+
+![](.gitbook/assets/sukurnshotto-2020-06-21-85052png.png)
+
+必要な情報を記入します。
+
+![](.gitbook/assets/docker_hub.png)
+
+これでプッシュするためのリポジトリが作られました。
+
+![](.gitbook/assets/docker_hub-2.png)
+
+ここに先程更新したイメージをプッシュ\(`docker push <REPOSITORY>`\)していきましょう。プッシュされたのは`880a502881dc`だけで、他のは`library/ubuntu`からマウントされています。これは、DockerHubにあるUbuntuのイメージレイヤを共有しているためです。
+
+```text
+$ docker push <repo_name>/test-repo
+The push refers to repository [docker.io/<repo_name>/test-repo]
+880a502881dc: Pushed 
+05f3b67ed530: Mounted from library/ubuntu 
+ec1817c93e7c: Mounted from library/ubuntu 
+9e97312b63ff: Mounted from library/ubuntu 
+e1c75a5e0bfa: Mounted from library/ubuntu 
+latest: digest: sha256:494ca8c9c87c8304caf60cf11341d0d4969e04248671114d3806494ec8bce9a8 size: 1359
+```
+
+Docker Hubを確認すると、問題なくプッシュされていることがわかります。
+
+![](.gitbook/assets/docker_hub-3.png)
+
+
 
