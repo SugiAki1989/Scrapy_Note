@@ -273,5 +273,46 @@ Docker Hubを確認すると、問題なくプッシュされていることが�
 
 ![](.gitbook/assets/docker_hub-3.png)
 
+先程プッシュしたイメージは、他人が使うことになるので、この作業は必要ないですが、イメージがあるとDoker Hubから取得できないので、イメージを削除しておきます。
+
+```text
+$ docker rmi <repo_name>/test-repo
+Untagged: <repo_name>/test-repo:latest
+Untagged: <repo_name>/test-repo@sha256:494ca8c9c87c8304caf60cf11341d0d4969e04248671114d3806494ec8bce9a8
+ 
+$ docker images
+REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
+ubuntu               test_update         a08a259e2ad0        23 minutes ago      73.9MB
+ubuntu               latest              74435f89ab78        3 days ago          73.9MB
+scrapinghub/splash   latest              4ddd2efcb0df        5 months ago        2.17GB
+hello-world          latest              bf756fb1ae65        5 months ago        13.3kB
+```
+
+イメージを取得\(`docker pull`\)して、コンテナを作り\(`docker run`\)、更新されたイメージが取得できているか確認\(`cat`\)します。
+
+```text
+$ docker pull <repo_name>/test-repo:latest
+latest: Pulling from <repo_name>/test-repo
+Digest: sha256:494ca8c9c87c8304caf60cf11341d0d4969e04248671114d3806494ec8bce9a8
+Status: Downloaded newer image for <repo_name>/test-repo:latest
+docker.io/<repo_name>/test-repo:latest
+~ took 3s 
+
+$ docker images
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+<repo_name>/test-repo   latest              a08a259e2ad0        28 minutes ago      73.9MB
+ubuntu                  test_update         a08a259e2ad0        28 minutes ago      73.9MB
+ubuntu                  latest              74435f89ab78        3 days ago          73.9MB
+scrapinghub/splash      latest              4ddd2efcb0df        5 months ago        2.17GB
+hello-world             latest              bf756fb1ae65        5 months ago        13.3kB
+ 
+$ docker run -it <repo_name>/test-repo bash
+
+root@4ef71bdfe48a:/# cat a_sample.txt 
+This is a sample text
+```
+
+更新されたイメージを取得できていることがわかります。このようにして、環境を統一することで、再現性を担保することになります。
+
 
 
