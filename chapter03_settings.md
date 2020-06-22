@@ -63,7 +63,6 @@ ROBOTSTXT_OBEY = True
 ```text
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
-#
 ```
 
 ### Middleware
@@ -124,6 +123,8 @@ Itempipelineの設定もsettings.pyで行います。
 
 // キャッシュの保存先
 #HTTPCACHE_DIR = 'httpcache'
+
+// キャッシュしないステータスコード
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 ```
