@@ -2,7 +2,7 @@
 
 ## はじめに
 
-Scrapy projectの中にはw3libというPythonライブラリがあります。このライブラリは、HTMLやURLを処理する便利な関数を提供しています。下記のようなことができます。
+Scrapy projectの中には[w3lib](https://w3lib.readthedocs.io/en/latest/index.html)というPythonライブラリがあります。このライブラリは、HTMLやURLを処理する便利な関数を提供しています。下記のようなことができます。
 
 * HTMLスニペットからコメントまたはタグを削除
 * HTMLスニペットからベースURLを抽出
