@@ -496,3 +496,7 @@ view(response)
 
 ![Response](.gitbook/assets/sukurnshotto-2020-05-31-154505png.png)
 
+### \#TODO / HTTPフォームとCookie 
+
+HTTPフォームとCookieについてもう少し深堀りしてまとめておきます。
+
