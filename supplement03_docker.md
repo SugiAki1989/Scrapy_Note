@@ -330,5 +330,5 @@ piyo
 CMD ["/bin/bash"]
 ```
 
-このすごくシンプルなDockerファイルをビルド\(`docker build`\)して、コンテナを構築すると、ubuntuのイメージからコンテナ内にubuntuを構築\(`ubuntu:latest`\)して、インストール可能なパッケージ一覧を更新\(`apt-get update`\)し、`hoge`、`fuga`、`piyo`をインストール\(`apt-get install`\)して、bashが使える状態\(`/bin/bash`\)でコンテナが立ち上がります。
+このすごくシンプルなDockerファイルをイメージビルド\(`docker build`\)して、コンテナを構築すると、ubuntuのイメージからコンテナ内にubuntuを構築\(`ubuntu:latest`\)して、インストール可能なパッケージ一覧を更新\(`apt-get update`\)し、`hoge`、`fuga`、`piyo`をインストール\(`apt-get install`\)して、bashが使える状態\(`/bin/bash`\)でコンテナが立ち上がります。
 
