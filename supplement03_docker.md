@@ -322,7 +322,7 @@ DockerファイルをDockerインストラクションで構成されます。�
 
 ```text
 FROM ubuntu:latest
-RUN apt-get update && apt-get install \
+RUN apt-get -y update && apt-get -y install \
 hoge \
 fuga \
 piyo
