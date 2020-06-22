@@ -316,7 +316,19 @@ This is a sample text
 
 ### Dockerファイル
 
-Dockerイメージを作る元になるDockerファイルについて、簡単にまとめておきます。役割としては、DockerファイルからDockerイメージを作り、Dockerイメージからコンテナを作るための、大本の設計図となるのがDockerファイルです。
+Dockerイメージを作る元になるDockerファイルについて、簡単にまとめておきます。役割としては、DockerファイルからDockerイメージを作り、Dockerイメージからコンテナを作るための、大本の設計図となるのがDockerファイルです。ビルドの方法までは扱いませんが、Dockerファイルがどんなものなのかをまとめておきます。
 
+DockerファイルをDockerインストラクションで構成されます。主なインストラクションとして、FROM、RUN、CMD、ADD、COPYなどがあります。DockerファイルはFROMから始まります。FROMでは基本的にはOSのイメージを指定します。RUNでは実行するLinuxコマンドを記載します。また、RUNごとにイメージレイヤーが作られます。Dockerファイルの末尾には、コンテナを立ち上げた際に実行したいコマンドを記載します。
 
+```text
+FROM ubuntu:latest
+RUN apt-get update && apt-get install \
+hoge \
+fuga \
+piyo
+
+CMD ["/bin/bash"]
+```
+
+このすごくシンプルなDockerファイルをビルド\(`docker build`\)して、コンテナを構築すると、ubuntuのイメージからコンテナ内にubuntuを構築\(`ubuntu:latest`\)して、インストール可能なパッケージ一覧を更新\(`apt-get update`\)し、`hoge`、`fuga`、`piyo`をインストール\(`apt-get install`\)して、bashが使える状態\(`/bin/bash`\)でコンテナが立ち上がります。
 
