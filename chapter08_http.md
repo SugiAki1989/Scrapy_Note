@@ -313,28 +313,6 @@ HTTP自体は非常にシンプルな通信プロトコルですが、弱点が�
 
 HTTPはステートレスなプロトコルであるため、ステートフルなやりとりを実現するためにHTTP cookieというデータを用いて通信しています。
 
-### HTTP Cookie
-
-HTTP CookieはどのようにHTTP通信に関わってくるのかを見ていきます。WebブラウザからHTTPリクエストを送った際に、サーバーはHTTPレスポンスと合わせて、ブラウザに保存してほしい情報としてHTTP Cookieも送ります。
-
-ECサイトであれば、HTTPリクエストを送った際に、HTTPレスポンスをブラウザを識別するためにブラウザにHTTP Cookieも送ります。その後、ブラウザがそのECサイトにアクセスする際に、保存しているHTTP Cookieを送ることで、サーバー側では、誰がアクセスしてきたのかを識別します。
-
-実際の通信では、HTTPヘッダーに、HTTPレスポンスをブラウザに送る時は、Set-CookieヘッダーにHTTP Cookieの情報を付与します。HTTPリクエスト側は、Cookieヘッダーに情報を含めることになります。ECサイトなどでは有効期限を定めたセッションCookieが一般的に用いられます。ちなみに`curl`コマンドのヘッダーオプション`-H`を使うことで、Cookieを送信できます。
-
-```http
-$ curl --verbose -H 'Cookie: name=scrapy; ver=111' http://example.com
-*   Trying 93.184.216.34...
-* TCP_NODELAY set
-* Connected to example.com (93.184.216.34) port 80 (#0)
-> GET / HTTP/1.1
-> Host: example.com
-> User-Agent: curl/7.64.1
-> Accept: */*
-> Cookie: name=scrapy; ver=111
-```
-
-HTTP Cookieと関連して、Webブラウザとサーバーの一連のやり取りの流れを「セッション」と呼びます。セッション管理のために、WebサーバーはHTTP CookieにセッションIDを付与することでセッション管理を行います。そのため、リクエストを送る際にセッションIDも送ることで、サーバー側は「セッション」を識別していきます。またセッションにおける最小粒度のアクションを「トランザクション」と呼びます。複数のトランザクションが時系列的に集まったものがセッションと言えるかもしれません。
-
 ### HTTPとWebアプリケーション
 
 Webブラウザ上で機能するアプリケーションのことをWebアプリケーションと呼びます。Webアプリケーションについても、少しばかり裏側の仕組みおさらいしておきます。
@@ -496,7 +474,27 @@ view(response)
 
 ![Response](.gitbook/assets/sukurnshotto-2020-05-31-154505png.png)
 
-### \#TODO / HTTPフォームとCookie 
+### HTTP Cookie
+
+HTTP CookieはどのようにHTTP通信に関わってくるのかを見ていきます。WebブラウザからHTTPリクエストを送った際に、サーバーはHTTPレスポンスと合わせて、ブラウザに保存してほしい情報としてHTTP Cookieも送ります。
+
+ECサイトであれば、HTTPリクエストを送った際に、HTTPレスポンスをブラウザを識別するためにブラウザにHTTP Cookieも送ります。その後、ブラウザがそのECサイトにアクセスする際に、保存しているHTTP Cookieを送ることで、サーバー側では、誰がアクセスしてきたのかを識別します。
+
+実際の通信では、HTTPヘッダーに、HTTPレスポンスをブラウザに送る時は、Set-CookieヘッダーにHTTP Cookieの情報を付与します。HTTPリクエスト側は、Cookieヘッダーに情報を含めることになります。ECサイトなどでは有効期限を定めたセッションCookieが一般的に用いられます。ちなみに`curl`コマンドのヘッダーオプション`-H`を使うことで、Cookieを送信できます。
+
+```http
+$ curl --verbose -H 'Cookie: name=scrapy; ver=111' http://example.com
+*   Trying 93.184.216.34...
+* TCP_NODELAY set
+* Connected to example.com (93.184.216.34) port 80 (#0)
+> GET / HTTP/1.1
+> Host: example.com
+> User-Agent: curl/7.64.1
+> Accept: */*
+> Cookie: name=scrapy; ver=111
+```
+
+HTTP Cookieと関連して、Webブラウザとサーバーの一連のやり取りの流れを「セッション」と呼びます。セッション管理のために、WebサーバーはHTTP CookieにセッションIDを付与することでセッション管理を行います。そのため、リクエストを送る際にセッションIDも送ることで、サーバー側は「セッション」を識別していきます。またセッションにおける最小粒度のアクションを「トランザクション」と呼びます。複数のトランザクションが時系列的に集まったものがセッションと言えるかもしれません。
 
 HTTPフォームとCookieについてもう少し深堀りしてまとめておきます。
 
