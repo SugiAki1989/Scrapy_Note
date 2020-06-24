@@ -736,8 +736,9 @@ if __name__ == "__main__":
     process = CrawlerProcess()
     process.crawl(HeadersCookies)
     process.start()
-
-
-
 ```
+
+リクエストの内容をみるとCookieも問題なくリクエストに含んで送れています。
+
+![](.gitbook/assets/sukurnshotto-2020-06-24-175700png.png)
 
