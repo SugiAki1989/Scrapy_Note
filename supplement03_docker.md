@@ -10,8 +10,8 @@ JavaScriptで動的にHTMLページが生成されるサイトをスクレイピ
 
 ```text
 $ docker login
-Username:
-Password:
+Username:****
+Password:****
 
 $ docker pull hello-world
 Using default tag: latest
