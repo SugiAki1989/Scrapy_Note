@@ -109,15 +109,30 @@ Itempipelineの設定もsettings.pyで行います。
 
 ### HTTPCACHE\_ENABLED
 
-スクレイピングする場所を調べるためにリクエストを何度も送ることがありますが、そのような場合にキャッシュを有効にしておけば、2回目以降はキャッシュを見に行くので、サーバーへの負担が軽減される。加えて、キャッシュを利用すれば高速に機能します。
+スクレイピングする場所を調べるためにリクエストを何度も送ることがありますが、そのような場合にキャッシュを有効にしておけば、2回目以降はキャッシュを見に行くので、高速に機能します。
 
 ```text
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
+
+// キャッシュを有効にするかどうか
 #HTTPCACHE_ENABLED = True
+
+// キャッシュの有効期限。0は無限を意味する。
 #HTTPCACHE_EXPIRATION_SECS = 0
+
+// キャッシュの保存先
 #HTTPCACHE_DIR = 'httpcache'
+
+// キャッシュしないステータスコード
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+```
+
+キャッシュの保存先は`.scrapy`ディレクトリに作られる。下記は、有効にした場合にログに出力されるキャッシュの保存先。
+
+```text
+2020-06-22 23:48:40 [scrapy.extensions.httpcache] DEBUG: Using filesystem cache storage in
+/Users/name/Documents/scrapy/<scrapy project>/.scrapy/httpcache
 ```
 
