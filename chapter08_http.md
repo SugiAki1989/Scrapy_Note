@@ -480,7 +480,7 @@ HTTP CookieはどのようにHTTP通信に関わってくるのかを見てい�
 
 ECサイトであれば、HTTPリクエストを送った際に、HTTPレスポンスをブラウザを識別するためにブラウザにHTTP Cookieも送ります。その後、ブラウザがそのECサイトにアクセスする際に、保存しているHTTP Cookieを送ることで、サーバー側では、誰がアクセスしてきたのかを識別します。
 
-実際の通信では、HTTPヘッダーに、HTTPレスポンスをブラウザに送る時は、Set-CookieヘッダーにHTTP Cookieの情報を付与します。HTTPリクエスト側は、Cookieヘッダーに情報を含めることになります。ECサイトなどでは有効期限を定めたセッションCookieが一般的に用いられます。ちなみに`curl`コマンドのヘッダーオプション`-H`を使うことで、Cookieを送信できます。
+実際の通信では、HTTPヘッダーに、HTTPレスポンスをブラウザに送る時は、Set-CookieヘッダーにHTTP Cookieの情報を付与します。Set-Cookieは複数あっても問題ありません。また、属性はセミコロンで区切られます。HTTPリクエスト側は、Cookieヘッダーに情報を含めることになります。ECサイトなどでは有効期限を定めたセッションCookieが一般的に用いられます。ちなみに`curl`コマンドのヘッダーオプション`-H`を使うことで、Cookieを送信できます。
 
 ```http
 $ curl --verbose -H 'Cookie: name=scrapy; ver=111' http://example.com
@@ -496,5 +496,92 @@ $ curl --verbose -H 'Cookie: name=scrapy; ver=111' http://example.com
 
 HTTP Cookieと関連して、Webブラウザとサーバーの一連のやり取りの流れを「セッション」と呼びます。セッション管理のために、WebサーバーはHTTP CookieにセッションIDを付与することでセッション管理を行います。そのため、リクエストを送る際にセッションIDも送ることで、サーバー側は「セッション」を識別していきます。またセッションにおける最小粒度のアクションを「トランザクション」と呼びます。複数のトランザクションが時系列的に集まったものがセッションと言えるかもしれません。
 
-HTTPフォームとCookieについてもう少し深堀りしてまとめておきます。
+HTTPフォームとCookieについてもう少し深堀りしてまとめておきます。ここでは、[Practical Web Scraping for Data Science: Best Practices and Examples with Python](https://www.amazon.com/Practical-Web-Scraping-Data-Science/dp/1484235819/)で使われているサンプルページをお借りして、Cookieの理解を深めます。`requests.Session()`を使えば簡単ではありますが、ここでは使わず動かしながら確認します。
+
+[このページ](http://www.webscrapingfordatascience.com/cookielogin/)はログインすることで[秘密のページ](http://www.webscrapingfordatascience.com/cookielogin/secret.php)へアクセスできるような仕組みになっています。ログインしていない状態だと、秘密のページにはアクセスできません。必要なCookie情報がないため、サーバーが秘密のページのURLを表示しません。
+
+```python
+import requests
+
+url = "http://www.webscrapingfordatascience.com/cookielogin/secret.php"
+r = requests.get(url)
+print(r.text)
+
+# Hmm... it seems you are not logged in
+```
+
+そのため、秘密のページへアクセスするために、ログインしてCookieを取得してから、そのCookieを使って秘密のページへHTTPリクエストを送信します。そうすることで、秘密のページへのアクセスを行います。
+
+```python
+import requests
+
+# Login
+url = "http://www.webscrapingfordatascience.com/cookielogin/"
+data_post = {"username": "testuser", "password": "password"}
+r = requests.post(url, data = data_post)
+
+# Cookieを取得して、secretページにアクセス
+my_cookie = r.cookies
+url = "http://www.webscrapingfordatascience.com/cookielogin/secret.php"
+r = requests.get(url, cookies = my_cookie)
+
+print(r.text)
+
+# This is a secret code: 1234
+```
+
+このようなパターンであれば問題ないのですが、ログインが成功すれば同時に秘密のページへリダイレクトされる場合はどうすればよいでしょうか。
+
+このような場合は、`post()`の`allow_redirects`引数を設定して、リダイレクトされないようにします。
+
+```python
+import requests
+
+# Login
+url = "http://www.webscrapingfordatascience.com/redirlogin/"
+data_post = {"username": "testuser", "password": "password"}
+r = requests.post(url, data = data_post, allow_redirects=False)
+
+# Cookieを取得して、secretページにアクセス
+my_cookie = r.cookies
+url = "http://www.webscrapingfordatascience.com/redirlogin/secret.php"
+r = requests.get(url, cookies = my_cookie)
+
+print(r.text)
+# This is a secret code: 1234
+```
+
+最後の例として、ログインページにアクセスしたかどうか、ログイン後にCookieのセッションIDを変更するようなサイトの場合を見ていきます。このような場合でも、Cookieを取得して、Cookiを使ってログイン、ログイン後に変わるCookieを取得して、Cookieを更新してから、秘密のページへアクセスすれば、秘密のページへアクセス可能です。
+
+```python
+import requests
+
+# Formを取得
+url = "http://www.webscrapingfordatascience.com/trickylogin/"
+r = requests.post(url)
+my_cookie = r.cookies
+print(my_cookie)
+
+# 先程のCookieを使ってpostを実行
+r = requests.post(url,
+                  params={"p": "login"},
+                  data = {"username": "testuser", "password": "password"},
+                  allow_redirects = False,
+                  cookies = my_cookie)
+
+# Cookieを更新する
+my_cookie = r.cookies
+print(my_cookie)
+
+# 秘密のページへアクセス
+r = requests.get(url, params={"p": "protected"}, cookies = my_cookie)
+print(r.text)
+
+
+# <RequestsCookieJar[<Cookie PHPSESSID=8u3j3mh4sq286755uuo59gaj83 for www.webscrapingfordatascience.com/>]>
+# <RequestsCookieJar[<Cookie PHPSESSID=ak6p8cpip0c0i9ee4vsmn6fet5 for www.webscrapingfordatascience.com/>]>
+# Here is your secret code: 3838.
+```
+
+
 
