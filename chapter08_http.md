@@ -583,5 +583,9 @@ print(r.text)
 # Here is your secret code: 3838.
 ```
 
+このような感じでCookieを処理すればよいのですが、Scrapyで同じように処理しようとすると、うまくいきません。HTTPリクエストの内容を可視化できる[`RequestBin.com`](https://requestbin.com/r/enldafevk2rhb/)を使って確認してみます。
+
+
+
 
 
