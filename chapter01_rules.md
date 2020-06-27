@@ -75,6 +75,10 @@
 
 ログイン画面では、ログインを「続行することで、 Amazonの[利用規約](https://www.amazon.co.jp/gp/help/customer/display.html/ref=ap_signin_notification_condition_of_use?ie=UTF8&nodeId=643006)および[プライバシー規約](https://www.amazon.co.jp/gp/help/customer/display.html/ref=ap_signin_notification_privacy_notice?ie=UTF8&nodeId=643000)に同意するものとみなされます」と明記されていますので、ログインするということは、利用規約に同意することになりますので、そこからスクレイピングした場合には、著作権法の例外があったとしても、それは利用規約違反にあたることになります。技術的にはスクレイピングできるからとはいえ、それを実行しても良いかは別問題です。
 
+ほかにもクラウドファンディングのプラットフォームである[KickStarterの利用規約](https://www.kickstarter.com/terms-of-use?ref=global-footer)にもこのような記載があります。
+
+![](.gitbook/assets/sukurnshotto-2020-06-27-114046png.png)
+
 #### 実害の発生
 
 サーバーは高価なものです。管理するためには、電力の供給にはじまり、冷却、監視、維持など様々なことを行う必要があります。これらを行う背景には、サーバー所有者のサービスを提供するためであって、間違ってもスクレイピングのためにサーバーを管理しているのではありません。
