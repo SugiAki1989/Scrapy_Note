@@ -588,3 +588,15 @@ pi@raspberrypi:~ $ crontab -e
 0 */6 * * * cd ~/Desktop/ynews_spider && /usr/bin/scrapy crawl yahoo_news_spider >> ~/Desktop/ynews_spider/exec-error.log 2>&1
 ```
 
+### おまけ
+
+再起動するとネットワークが繋がらなくなります。SSHやVNCではアクセスできるのにネットにはつながらないという状態です。この場合、もちろんScrapyもHTTPリクエストを送ることができません。下記のコマンドを実行することで解消されます。
+
+```text
+// 無線の場合
+pi@raspberrypi:~ $ sudo dhclient wlan0
+
+// 有線の場合
+pi@raspberrypi:~ $ sudo dhclient eth0
+```
+
