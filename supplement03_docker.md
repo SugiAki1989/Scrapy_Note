@@ -332,3 +332,34 @@ CMD ["/bin/bash"]
 
 このすごくシンプルなDockerファイルをイメージビルド\(`docker build`\)して、コンテナを構築すると、ubuntuのイメージからコンテナ内にubuntuを構築\(`ubuntu:latest`\)して、インストール可能なパッケージ一覧を更新\(`apt-get update`\)し、`hoge`、`fuga`、`piyo`をインストール\(`apt-get install`\)して、bashが使える状態\(`/bin/bash`\)でコンテナが立ち上がります。
 
+### DockerとScrapy
+
+DockerでScrapyを動かすための最低限のDockerFile。
+
+```text
+FROM python:3.8.6
+
+USER root
+
+RUN apt-get update && \
+    apt-get -y install locales && \
+    localedef -f UTF-8 -i ja_JP ja_JP.UTF-8 && \
+    mkdir py-work
+
+ENV LANG ja_JP.UTF-8
+ENV LANGUAGE ja_JP:ja
+ENV LC_ALL ja_JP.UTF-8
+ENV TZ JST-9
+
+# python package
+RUN pip install --upgrade pip && \
+    # pip install pymysql && \
+    # pip install requests && \
+    # pip install bs4 && \
+    pip install scrapy==2.3.0
+
+CMD [ "/bin/bash" ]
+```
+
+
+
